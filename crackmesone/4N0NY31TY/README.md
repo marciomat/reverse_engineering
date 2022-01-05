@@ -78,9 +78,10 @@ If the comparison is equal we got a valid license, otherwise it's invalid.
 
 Now this is a typical case where a script is the best way to find the correct string. And it's safe to assume that there are multiple answers that would be accepted by the validation check.
 
-The script: [[script_crack.py]]
+The [script](script_crack.py) is very simple.
 
-And running the script we found the following string as one of the possible answers:
+And by running it, we found the following string as one of the possible answers:
+
 ```
 ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ!
 ```
