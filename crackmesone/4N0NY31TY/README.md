@@ -14,6 +14,18 @@ Input:
 Output:
 - [script_crack.py](script_crack.py) - Script created to find the answer
 
+# The challenge
+
+This challenge is quite simple.
+Uppon running the script we have to enter a valid license key:
+
+```
+$ ./crackme        
+Enter License: 1234
+
+Invalid license!
+```
+
 # Solution
 
 We first open the binary in radare2 and analyze the binary:
