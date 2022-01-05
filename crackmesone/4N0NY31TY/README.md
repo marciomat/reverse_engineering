@@ -8,11 +8,11 @@
 # Files
 
 Input:
-- (611e76ec33c5d45db85dc2d1.zip)[611e76ec33c5d45db85dc2d1.zip] - Original crackmesone file
-- (crackme)[crackme] - Binary to crack
+- [611e76ec33c5d45db85dc2d1.zip](611e76ec33c5d45db85dc2d1.zip) - Original crackmesone file
+- [crackme](crackme) - Binary to crack
 
 Output:
-- (script_crack.py)[script_crack.py] - Script created to find the answer
+- [script_crack.py](script_crack.py) - Script created to find the answer
 
 # Solution
 
