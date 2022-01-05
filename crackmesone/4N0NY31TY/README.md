@@ -26,7 +26,7 @@ By listing the functions we see the `main()` and we go directly there:
 
 By looking at the disassembly we can right away identify where the _license_ is stored:
 
-```
+```assembly
 0x000012e6      488d3d440d00.  lea rdi, str.Enter_License:_
 0x000012ed      e8f7feffff     call sym.input
 0x000012f2      488945f8       mov qword [var_8h], rax   
@@ -44,7 +44,7 @@ Next we find a `for loop` going through each char of the input license:
 
 > I've renamed some local variables and added comments to make it easier to understand
 
-```
+```assembly
 │           0x000012f6      c745f0000000.  mov dword [sum_chars], 0                                                                                                                                                                                 
 │           0x000012fd      c745f4000000.  mov dword [i_loop], 0                                                                                                                                                                                    
 │       ┌─< 0x00001304      eb1a           jmp 0x1320                                                                                                                                                                                               
@@ -69,7 +69,7 @@ Next we find a `for loop` going through each char of the input license:
 
 In the following section we have:
 
-```
+```assembly
 │           0x00001331      488b45f8       mov rax, qword [input_license]                                                                                                                                                                           
 │           0x00001335      4889c7         mov rdi, rax
 │           0x00001338      e86bffffff     call sym.len
