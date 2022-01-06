@@ -36,7 +36,7 @@ As always we start by opening and analyzing the binary in radare2:
 r2 -A PleaseCrackMe
 ```
 
-We have access to the `main()` function, so we `seek` it right away:
+We have access to the `main()` function, so we `seek` to it right away:
 
 > I've renamed local variables and added some comments for clarity
 
@@ -172,11 +172,11 @@ Wrong password
 
 It failed!
 
----
+# There is a bug in the binary!
 
-Remember that there is a bug in the code?
+Let's look closer to understand what's going on. 
 
-So we first need to understand how `strcmp()` works.
+First we need to understand how `strcmp()` works.
 
 > This function starts comparing the first character of each string. If they are equal to each other, it continues with the following pairs until the characters differ or _until a terminating null-character is reached_.
 
@@ -187,7 +187,7 @@ The key part is:
 And if we look back in the code that generates `gen_password`, it doesn't add the `NULL` character at the end of the string.
 This messes up with `strcmp()` and creates a non-deterministic behavior in the code.
 
-To show the lack of determinism, let's try a long sequence of characters and see if get lucky:
+To show the lack of determinism, let's try a long sequence of characters and see if we get lucky:
 
 ```
 $ ./PleaseCrackMe
