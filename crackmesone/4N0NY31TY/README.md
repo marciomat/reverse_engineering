@@ -17,7 +17,7 @@ Output:
 # The challenge
 
 This challenge is quite simple.
-Uppon running the script we have to enter a valid license key:
+Upon running the script we have to enter a valid license key:
 
 ```
 $ ./crackme        
@@ -36,7 +36,7 @@ By listing the functions we see the `main()` and we go directly there:
 
 `s main`
 
-By looking at the disassembly we can right away identify where the _license_ is stored:
+By looking at the disassembly we can right away identify where the **user input** is stored:
 
 ```assembly
 0x000012e6      488d3d440d00.  lea rdi, str.Enter_License:_
@@ -91,7 +91,7 @@ In the following section we have:
 │       ┌─< 0x00001348      750e           jne 0x1358  
 ```
 
-The above code bascially takes the `strlen(input_license)`, multiplies by (-10) and adds `0x34e7`. The result it compares with `sum_chars` (which is the result of the previous loop).
+The above code bascially takes the `strlen(input_license)`, multiplies by (-10) and adds `0x34e7`. The result is compared with `sum_chars` (which was calculated in the previous loop).
 
 If the comparison is equal we got a valid license, otherwise it's invalid.
 

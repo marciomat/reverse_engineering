@@ -13,11 +13,12 @@ def add_chars(input_var):
 def automated():
     char = 'Z'  # The higher the ASCII value the shorter the license key
     passwd = char
+
+    while (add_chars(passwd) < get_key(passwd)):    # Add 'Z' char until the sum of ASCII is greater than generated key
+        passwd = passwd + char
+
     found = False
     while (found == False):
-        while (add_chars(passwd) < get_key(passwd)):    # Add 'Z' char until the sum of ASCII is greater than generated key
-            passwd = passwd + char
-    
         if (get_key(passwd) == add_chars(passwd)):
             found = True
             print("\n\nFound!\n\n")
