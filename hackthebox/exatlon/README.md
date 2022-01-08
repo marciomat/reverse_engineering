@@ -1,4 +1,4 @@
-> source: https://crackmes.one/crackme/611e76ec33c5d45db85dc2d1
+> source: https://app.hackthebox.com/challenges/exatlon
 
 # Tools used
 
@@ -30,12 +30,13 @@ $ ./exatlon_v1
 
 # Solution
 
-The first thing to realize is that this file is compressed with UPX. Before I learned that it was very difficult to reverse engineer this binary since radare2 (and any other tool) won't be able to show a very readable structure.
+The first thing to realize is that this file is compressed with UPX.
+Before I learned that, it was very difficult to reverse engineer this binary since radare2 (and any other tool) won't be able to show a very readable structure.
 
-One way to check for this compression is by running the command `strings` and `grep` for _UPX_:
+One way to check if a binary is using this compression is by running the command `strings` and `grep` for _UPX_:
 
 ```
-$ strings exatlon_v1 | grep UPX                                                                                                                                                                                                      130 ⨯
+$ strings exatlon_v1 | grep UPX
 UPX!<
 $Info: This file is packed with the UPX executable packer http://upx.sf.net $
 $Id: UPX 3.95 Copyright (C) 1996-2018 the UPX Team. All Rights Reserved. $
@@ -43,3 +44,6 @@ UPX!u
 UPX!
 UPX!
 ```
+
+---
+
