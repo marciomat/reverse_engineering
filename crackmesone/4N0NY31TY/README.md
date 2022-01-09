@@ -13,6 +13,7 @@ Input:
 
 Output:
 - [script_crack.py](script_crack.py) - Script created to find the answer
+- [disassembly.md](disassembly.md) - Full disassembly of `main()` function
 
 # The challenge
 

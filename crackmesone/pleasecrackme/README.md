@@ -11,6 +11,10 @@ Input:
 - [612e85d833c5d41acedffa4f.zip](612e85d833c5d41acedffa4f.zip) - Original crackmesone file
 - [PleaseCrackMe](PleaseCrackMe) - Binary to crack
 
+Output:
+- [disassembly.md](disassembly.md) - Full disassembly of `main()` function
+
+
 # The challenge
 
 This challenge is very simple.
