@@ -10,7 +10,7 @@ Input:
 - [exatlon_v1](exatlon_v1) - Binary to crack
 
 Output:
-- [disassembly.md](disassembly.md) - Full disassembly of the `main()` function
+- [disassembly.md](disassembly.md) - Full disassembly of the `main()` function (with renamed local variables for clarity)
 
 # The challenge
 
@@ -54,7 +54,7 @@ And for unpacking it, we use the following command:
 upx -d exatlon_v1
 ```
 
----
+## Preliminary analysis
 
 Now that the binary is decompressed we can open and analyze it in _radare2_:
 
@@ -120,7 +120,7 @@ The second parameter is just a hard-coded memory address that seems to point to 
 
 So now it's clear why in the previous block of code, we can confidently assume that the function `exatlon()` seems to be where our `user_input` is being encrypted.
 
----
+## Understanding the encryption
 
 Now we have couple of ways to deal with it.
 
@@ -132,4 +132,34 @@ So approach number 2 it is!
 
 ---
 
+First we take a look at the, supposedly expected encrypted password.
+In order to do that we put a breakpoint at the assembly line where it loads the address of that string into `rsi` and print it:
+
+```
+:> ps @ rsi
+1152 1344 1056 1968 1728 816 1648 784 1584 816 1728 1520 1840 1664 784 1632 1856 1520 1728 816 1632 1856 1520 784 1760 1840 1824 816 1584 1856 784 1776 1760 528 528 2000
+```
+
+As we can see, it's all in ASCII and seems like each sequence of numbers is one _char_.
+
+---
+
+Now let's hope we can see the `exatlon()` function encrypting our `user_input` in something that resembles the numbers above.
+
+Since we know already where `exatlon()` is storing the `encrypted_input`, we just print it after it returns from `exatlon()`. For this run I used as `user_input`: "0123456789"
+
+And this is what we got:
+
+```
+:> pf S @ rax
+0x7ffcd7c56d00 = 0x7ffcd7c56d00 -> 0x02378fe0 "768 784 800 816 832 848 864 880 896 912 "
+```
+
+> The method to print the strings from `rax` is different since in this case `rax` hold the address to where our encrypted input is stored.
+>
+> So we used the `pf S` which is a print given a format-string. And the format given as `S` means: _64bit pointer to string_
+
+And that string seems to be in the same format as the expected password encryption. And we can tell that since we have already some hits (meaning, our encrypted password contains numbers in it).
+
+## Decrypting the flag!
 
