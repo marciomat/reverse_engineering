@@ -2,23 +2,20 @@
 
 Write-ups for RE challenges
 
-
-<br/><br/>
-
+<br/>
 
 # HackTheBox
 
 - [exatlon_v1](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/exatlon)
 
-<br/><br/>
+<br/>
 
 # Crackmes.one
 
 - [4N0NY31TY](https://github.com/marciomat/reverse_engineering/tree/main/crackmesone/4N0NY31TY)
 - [pleasecrackme](https://github.com/marciomat/reverse_engineering/tree/main/crackmesone/pleasecrackme)
 
-
-<br/><br/>
+<br/>
 
 # Tools
 
