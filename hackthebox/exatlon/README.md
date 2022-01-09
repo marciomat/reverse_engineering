@@ -10,6 +10,7 @@ Input:
 - [exatlon_v1](exatlon_v1) - Binary to crack
 
 Output:
+- [python script](crack_passw.py) - Python script to decrypt the password
 - [disassembly.md](disassembly.md) - Full disassembly of the `main()` function (with renamed local variables for clarity)
 
 # The challenge
@@ -64,7 +65,7 @@ r2 -A exatlon_v1
 
 We look for the `main()` function and it's there.
 
-And it's very straightforward to find where it stores the user input:
+It's very straightforward to find where it stores the user input:
 
 > A local variable was renamed to `user_input` for clarity
 
@@ -159,7 +160,7 @@ And this is what we got:
 >
 > So we used the `pf S` which is a print with a format-string. And the format given is `S` which means: _64bit pointer to string_
 
-And that string seems to be in the same format as the expected password encryption. And we can tell that since we have already some hits (meaning, our encrypted password contains numbers in it).
+And that string seems to be in the same format as the expected password encryption. We can tell that since we have already some hits (meaning, our encrypted password contains numbers in it).
 
 ## Decrypting the flag!
 
