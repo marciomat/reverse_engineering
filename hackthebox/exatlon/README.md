@@ -157,9 +157,27 @@ And this is what we got:
 
 > The method to print the strings from `rax` is different since in this case `rax` hold the address to where our encrypted input is stored.
 >
-> So we used the `pf S` which is a print given a format-string. And the format given as `S` means: _64bit pointer to string_
+> So we used the `pf S` which is a print with a format-string. And the format given is `S` which means: _64bit pointer to string_
 
 And that string seems to be in the same format as the expected password encryption. And we can tell that since we have already some hits (meaning, our encrypted password contains numbers in it).
 
 ## Decrypting the flag!
 
+The hard part is done. Now we just need to grab the output of `exatlon()` while using as `user_input` a string with all printable ASCII chars.
+In doing that we will have a direct map of each ASCII char and its corresponding encrypted code.
+
+After some work we have:
+
+```python
+allchars = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}"
+
+allcodes = [528, 544, 560, 576, 592, 608, 624, 640, 656, 672, 688, 704, 720, 736, 752, 768, 784, 800, 816, 832, 848, 864, 880, 896, 912, 928, 944, 960, 976, 992, 1008, 1024, 1040, 1056, 1072, 1088, 1104, 1120, 1136, 1152, 1168, 1184, 1200, 1216, 1232, 1248, 1264, 1280, 1296, 1312, 1328, 1344, 1360, 1376, 1392, 1408, 1424, 1440, 1456, 1472, 1488, 1504, 1520, 1536, 1552, 1568, 1584, 1600, 1616, 1632, 1648, 1664, 1680, 1696, 1712, 1728, 1744, 1760, 1776, 1792, 1808, 1824, 1840, 1856, 1872, 1888, 1904, 1920, 1936, 1952, 1968, 1984, 2000]
+```
+
+And we can also grab the encrypted flag that we have already found:
+
+```python
+encrpt_pass = [1152, 1344, 1056, 1968, 1728, 816, 1648, 784, 1584, 816, 1728, 1520, 1840, 1664, 784, 1632, 1856, 1520, 1728, 816, 1632, 1856, 1520, 784, 1760, 1840, 1824, 816, 1584, 1856, 784, 1776, 1760, 528, 528, 2000]
+```
+
+Using this data structures we can create a simple [python script](crack_passw.py) to decode our flag!
