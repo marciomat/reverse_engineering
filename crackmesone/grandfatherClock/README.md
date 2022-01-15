@@ -83,7 +83,7 @@ To see this in practice, I printed the first and second position of the `argv_in
 0x7ffc856ad8d0 = 0x7ffc856ad8d0 -> 0x7ffc856ae2df "my_flag"
 ```
 
-Moving on, after accessing the _input_ passed by the user, it calls `strlen()` and with the result it does a bit-logic `AND` with `0x1`, followed by a check if `rax` is zero.
+Moving on, after accessing the input passed by the user, it calls `strlen()` and with the result it does a bit-logic `AND` with `0x1`, followed by a check if `rax` is zero.
 This means that the software is checking if the number of _chars_ in the input string is _even_ (as opposed to _odd_).
 
 If the number of _chars_ is _odd_ it terminates the execution.
@@ -103,11 +103,11 @@ If the number of _chars_ is _even_, it continues the execution:
 │      │    0x55629d85044d      4889c6         mov rsi, rax
 ```
 
-Here it access again the second parameter from the command line (i.e. the input provided by the user) and passes it as argument to a misterious function.
+Here it accesses again the second parameter from the command line (i.e. the input provided by the user) and passes it as argument to a misterious function.
 
-In these situations we always have a decision to make:
+In situations like this we always have a decision to make:
 
-- Do we dive in the function and understand its inner workings?
+- Do we dive in the function to understand its inner workings?
 
 - Or do we use a debugger, let the function run its magic (as a black-box) and we hopefully get to understand what it does after trying different inputs?
 
@@ -143,9 +143,9 @@ In the following step, it calls `strlen()` passing 2 arguments:
 
 
 ```assembly
-│           0x55be44f3a44d b    4889c6         mov rsi, rax                                                                                                                                                                                      
+│           0x55be44f3a44d      4889c6         mov rsi, rax                                                                                                                                                                                      
 │           0x55be44f3a450      488d05c90b00.  lea rax, obj._867a0be1_691e_4546_9b6c_020df3bcdc93 ; 0x55be44f3b020 ; "]\x10\x14LC\x10CNM\x14?GL4#&A[(R\x10\x11?S\x11LTR"                                                                         
-│           0x55be44f3a457 b    4889c7         mov rdi, rax
+│           0x55be44f3a457      4889c7         mov rdi, rax
 │           0x55be44f3a45a      e831fcffff     call sym.imp.strcmp
 │           0x55be44f3a45f      85c0           test eax, eax
 │       ┌─< 0x55be44f3a461      7416           je 0x55be44f3a479
