@@ -33,7 +33,7 @@ First we open the binary in _radare2_ and analyze it:
 $ r2 -A grandfather_clock
 ```
 
-We list all functions and we see `main()` accessible. Looking into the `main()` we can right away identify how it handles the argument passed via the command line:
+We list all functions and we see `main()` accessible. Looking into the `main()` we can right away identify how it accesses the argument passed via the command line:
 
 ```assembly
 │           0x55f8eb1c43e3      897dfc         mov dword [var_4h], edi    ; argc
@@ -51,9 +51,9 @@ So clearly the vector of arguments is stored in the local variable `argv_in` (re
 > - RCX
 > - R8
 > - R9
-> - And if there are more arguments, they're _pushed_ into the stack
+> - And if there are more arguments, they're pushed into the stack
 
----
+## Validating the user input
 
 Next, we have the following check:
 
@@ -69,10 +69,10 @@ Next, we have the following check:
 ```
 
 The first interesting thing to look at is how to get the parameter passed via command line.
-We know that the command line parameters in C are always passed via a _vector[ ]_ and each position of the _vector[ ]_ contains the string to the parameter.
+We know that the command line parameters in C are always passed via a _vector[ ]_ and each position of the _vector[ ]_ contains the string to a parameter.
 
 We also know that the first parameter is always the file _path/name_. And we're not interested in that.
-We want to access the second position of the `argv_in[]` vector. That's why in the second line of the code block above it is adding 8 to the pointer to the vector.
+We want to access the second position of the `argv_in[]` vector. That's why in the second line of the code block above it is adding 8 to the pointer.
 
 To see this in practice, I printed the first and second position of the `argv_in`. Notice how to print the second position, by simply adding 8:
 
@@ -80,19 +80,19 @@ To see this in practice, I printed the first and second position of the `argv_in
 :> pf S @ rax
 0x7ffc856ad8c8 = 0x7ffc856ad8c8 -> 0x7ffc856ae2a0 "/home/<user>/re/crackmesone/grandfatherClock/grandfather_clock"
 :> pf S @ rax + 8
-0x7ffc856ad8d0 = 0x7ffc856ad8d0 -> 0x7ffc856ae2df "abcd"
+0x7ffc856ad8d0 = 0x7ffc856ad8d0 -> 0x7ffc856ae2df "my_flag"
 ```
 
-Moving on, after accessing the _input_ passed by the user, it calls `strlen()` and does a bit-logic `AND` with `0x1`, followed by a check if `rax` is zero.
+Moving on, after accessing the _input_ passed by the user, it calls `strlen()` and with the result it does a bit-logic `AND` with `0x1`, followed by a check if `rax` is zero.
 This means that the software is checking if the number of _chars_ in the input string is _even_ (as opposed to _odd_).
 
 If the number of _chars_ is _odd_ it terminates the execution.
 
 > The reason for this check will become more apparent later on.
 
----
+## The misterious function
 
-If the number of _chars_ is _even_, it continues execution:
+If the number of _chars_ is _even_, it continues the execution:
 
 ```assembly
 │      │└─> 0x55629d85043a      488b45f0       mov rax, qword [argv_in]
@@ -105,11 +105,11 @@ If the number of _chars_ is _even_, it continues execution:
 
 Here it access again the second parameter from the command line (i.e. the input provided by the user) and passes it as argument to a misterious function.
 
-In these situations we always have a decision to make.
+In these situations we always have a decision to make:
 
 - Do we dive in the function and understand its inner workings?
 
-- Or do we use a debugger, let the function run its magic, as a black-box, and we hopefully get to understand what it does after trying different inputs?
+- Or do we use a debugger, let the function run its magic (as a black-box) and we hopefully get to understand what it does after trying different inputs?
 
 In this case I opted for the latter. And luckily it was quite straighforward to understand what this magic function is doing.
 
@@ -124,6 +124,58 @@ And I got as output:
 DBAC
 ```
 
-So first it made it all upper-case. This is accomplished by subtracting `0x20` from the ASCII char.
+So first it made each _char_ into upper-case. This is accomplished by subtracting `0x20` from the ASCII char.
 
 But what happens if the input is already upper-case? It still subtracts `0x20`! So for ex, if the input is `AB` (ASCII code: 0x41 and 0x42), the output would be `!"` (ASCII code: 0x21 and 0x22).
+
+The second thing that the misterious function did was to scramble the letters in a pattern that seems to oscilate like a pendulum (and that's why the name of this challenge!).
+
+> And now we know why the number of _chars_ in the user input has to be _even_.
+>
+> It's because the pattern for this scramble uses pairs of _chars_ to put them in opposite extremes of the output string
+
+## The encoded flag!
+
+In the following step, it calls `strlen()` passing 2 arguments:
+
+- Arg1 (`rdi`): data store in the address `0x55be44f3b020`
+- Arg2 (`rsi`): our scrambled user input
+
+
+```assembly
+│           0x55be44f3a44d b    4889c6         mov rsi, rax                                                                                                                                                                                      
+│           0x55be44f3a450      488d05c90b00.  lea rax, obj._867a0be1_691e_4546_9b6c_020df3bcdc93 ; 0x55be44f3b020 ; "]\x10\x14LC\x10CNM\x14?GL4#&A[(R\x10\x11?S\x11LTR"                                                                         
+│           0x55be44f3a457 b    4889c7         mov rdi, rax
+│           0x55be44f3a45a      e831fcffff     call sym.imp.strcmp
+│           0x55be44f3a45f      85c0           test eax, eax
+│       ┌─< 0x55be44f3a461      7416           je 0x55be44f3a479
+```
+
+It's very clear that whatever data is stored in the hardcoded address is our scrambled flag.
+
+Let's take a look into that:
+
+```
+:> px 30 @ rax
+- offset -       0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF
+0x55be44f3b020  5d10 144c 4310 434e 4d14 3f47 4c34 2326  ]..LC.CNM.?GL4#&
+0x55be44f3b030  415b 2852 1011 3f53 114c 5452 0000       A[(R..?S.LTR..
+```
+
+The first thing to look for is the `NULL` char (i.e. `0x00`) since `strcmp()` uses it to know where the strings end.
+
+Based on that we can guess how many letters our flag has.
+
+Also we can do a quick sanity check and confirm that all bytes are bigger or equal to `0x01` and smaller or equal to `0x5D`.
+
+We know that since all _chars_ have to be a printable _char_. And by looking at the ASCII table we can see that printable _chars_ range from `0x21` (as `!`) to `0x7D` (as `}`). But the scrambling function was subtracting `0x20` from every _char_.
+
+And that sequence of bytes indeed are all in this interval, which is good news!
+
+## Using a script to decode our flag
+
+Now we have all the information we need to be able to decode our flag.
+
+We know what is our encoded flag and we know how to unscramble it.
+
+I created this quick [python script](./decode_pass.py) which is quite easy to understand and _voila_! It worked!
