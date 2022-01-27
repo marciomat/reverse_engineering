@@ -6,16 +6,16 @@ Write-ups for RE challenges
 
 # HackTheBox
 
-- [exatlon_v1](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/exatlon)
+- [exatlon_v1](./hackthebox/exatlon)
 
 <br/>
 
 # Crackmes.one
 
-- [4N0NY31TY](https://github.com/marciomat/reverse_engineering/tree/main/crackmesone/4N0NY31TY)
-- [pleasecrackme](https://github.com/marciomat/reverse_engineering/tree/main/crackmesone/pleasecrackme)
-- [grandfatherClock](https://github.com/marciomat/reverse_engineering/tree/main/crackmesone/grandfatherClock)
-- [cm001](https://github.com/marciomat/reverse_engineering/tree/main/crackmesone/cm001)
+- [4N0NY31TY](./crackmesone/4N0NY31TY)
+- [pleasecrackme](./crackmesone/pleasecrackme)
+- [grandfatherClock](./crackmesone/grandfatherClock)
+- [cm001](./crackmesone/cm001)
 
 <br/>
 
