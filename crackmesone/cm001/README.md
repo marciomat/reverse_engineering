@@ -200,7 +200,7 @@ Let's look closer into the first few instructions to understand what's going on:
 ```
 
 The instruction `pextrb` is basically extracting a byte from `xmm0` and copying into `r8d`.
-But which byte? The last operand (in this case it's 0).
+But which byte? The last operand defines which one (in this case it's 0, so the least significant byte).
 
 So the first byte from `xmm0` is copied to `r8d` and then it's XORed with `eax`.
 And this sequence is executed 16 times, each time extracting the next byte from `xmm0`.
@@ -232,7 +232,7 @@ One important detail is to realize that it still uses the byte number 11 (`0xb`)
 
 > And be aware that the content of `xmm0` here is after it got XORed with that hardcoded sequence of random bytes (`str.dG46rskj8_457_:`).
 
-Now the binary starts looking at the second group of 16 characters (i.e. the content of `xmm1`).
+Now the binary finally starts looking at the second group of 16 characters (i.e. the content of `xmm1`).
 
 ```assembly
 │       │   0x00401627      660f110c25b0.  movupd xmmword [0x4040b0], xmm1
