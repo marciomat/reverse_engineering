@@ -226,7 +226,7 @@ Assuming we survived so far, next we have some more random magic numbers math:
 
 First thing to notice is that the content of `eax` from the last stage is not used here since it got overwritten with `0x11` in the first line above.
 
-It's not hard to follow what the code is doing, we just need some patience to go line by line since it's all simple bits and bytes being moved around.
+It's not hard to follow what the code is doing, we just need some patience to go line by line since it's all simple bits and bytes bein moved around.
 
 One important detail is to realize that it still uses the byte number 11 (`0xb`) from the `xmm0`. So even though we're now validating the second group of 16 characters, the content of `xmm0` still influences here.
 
@@ -248,3 +248,4 @@ Now the binary finally starts looking at the second group of 16 characters (i.e.
 │       │   0x0040164c      4883f800       cmp rax, 0
 │      ┌──< 0x00401650      7538           jne failed_password
 ```
+
