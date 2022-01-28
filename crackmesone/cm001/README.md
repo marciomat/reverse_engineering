@@ -1,4 +1,4 @@
-> source: https://crackmes.one/crackme/615888be33c5d4329c344f66
+> source: [https://crackmes.one/crackme/615888be33c5d4329c344f66](https://crackmes.one/crackme/615888be33c5d4329c344f66)
 
 # Files
 
@@ -264,5 +264,86 @@ This is a common way to access the data pointed by `r8`, byte per byte, with eac
 Again, more 'random' logic moving bytes around for each iteration of the loop. Remember, the loop has a counter from `0x00` to `0x10` (`0x10` not included in the iteration, so it loops 15x).
 
 And in the end, the accumulated result in `rax` shall be equal to zero, otherwise it fails.
+
+## Stage 2 and a half: A bug? Or a feature?
+
+Now it's where I got stuck for a long time. I'm still not sure if I'm missing something or there's a bug in the code.
+
+Let's take a look:
+
+```assembly
+│      ││   0x00401652      66480f7ed8     movq rax, xmm3              ; arg10
+│      ││   0x00401657      66480f3a16d3.  pextrq rbx, xmm2, 1
+│      ││   0x0040165e      4831d8         xor rax, rbx
+│      ││   0x00401661      48bb031223ff.  movabs rbx, 0xffff231203
+│      ││   0x0040166b      66490f3a16d8.  pextrq r8, xmm3, 1
+│      ││   0x00401672      66490f7ed1     movq r9, xmm2               ; arg9
+│      ││   0x00401677      4c890c25b040.  mov qword [0x4040b0], r9    ; [0x4040b0:8]=0
+│      ││   0x0040167f      4c890425a840.  mov qword [0x4040a8], r8    ; [0x4040a8:8]=0
+└      ││   0x00401687      48f7f3         div rbx
+```
+
+The following instruction right after `div rbx` (not shown here) is where the `failed_password()` function starts so it's definetely not part of the normal flow.
+
+Not sure why the last instruction of this function would end with `div rbx`.
+
+Anyways, after days banging my head against the well I found another piece of code that really seems to be the continuation of the above block of code:
+
+```assembly
+            0x004013e0      488b3dc92c00.  mov rdi, qword [0x004040b0]    ; [0x4040b0:8]
+            0x004013e7      4c8b05ba2c00.  mov r8, qword [0x004040a8]    ; [0x4040a8:8]
+            0x004013ee      55             push rbp
+            0x004013ef      4c39c7         cmp rdi, r8
+        ┌─< 0x004013f2      0f84c8000000   je 0x4014c0
+        │   ; CODE XREF from fcn.00401200 @ +0x2d3
+        │   0x004013f8      4883ff0f       cmp rdi, 0xf                ; 15
+       ┌──< 0x004013fc      0f878e000000   ja 0x401490
+```
+
+And the reason why I believe this should be the continuation is because it's recovering data saved in these 2 memory addresses:
+`0x004040b0` and `0x004040a8`
+
+But if you look at the instruction addresses, they're note close by! So we need a jump somewhere to make what I belive is the flow it should take.
+
+The only solution I came up with was to sneak in a jump instruction to replace the `div rbx` opcode above.
+
+If you look at the opcode for `div rbx`, it's quite small: `0x48f7f3`. So my jump opcode had to fit in there. And a regular `jmp 0x004013e0` instruction is bigger than that and wouldn't fit.
+
+So I first loaded the intended address (`0x004013e0`) into `rbx` and then used the opcode `jmp rbx`.
+
+To visualize the before and after. The first block of code went from this:
+
+```assembly
+│      ││   0x00401652      66480f7ed8     movq rax, xmm3              ; arg10
+│      ││   0x00401657      66480f3a16d3.  pextrq rbx, xmm2, 1
+│      ││   0x0040165e      4831d8         xor rax, rbx
+│      ││   0x00401661      48bb031223ff.  movabs rbx, 0xffff231203
+│      ││   0x0040166b      66490f3a16d8.  pextrq r8, xmm3, 1
+│      ││   0x00401672      66490f7ed1     movq r9, xmm2               ; arg9
+│      ││   0x00401677      4c890c25b040.  mov qword [0x4040b0], r9    ; [0x4040b0:8]=0
+│      ││   0x0040167f      4c890425a840.  mov qword [0x4040a8], r8    ; [0x4040a8:8]=0
+└      ││   0x00401687      48f7f3         div rbx
+```
+
+To this:
+
+```assembly
+│      ││   0x00401652      66480f7ed8     movq rax, xmm3              ; arg10
+│      ││   0x00401657      66480f3a16d3.  pextrq rbx, xmm2, 1
+│      ││   0x0040165e      4831d8         xor rax, rbx
+│      ││   0x00401661      48bbe0134000.  movabs rbx, 0x4013e0
+│      ││   0x0040166b      66490f3a16d8.  pextrq r8, xmm3, 1
+│      ││   0x00401672      66490f7ed1     movq r9, xmm2               ; arg9
+│      ││   0x00401677      4c890c25b040.  mov qword [0x4040b0], r9    ; [0x4040b0:8]=0
+│      ││   0x0040167f      4c890425a840.  mov qword [0x4040a8], r8    ; [0x4040a8:8]=0
+└      ││   0x00401687      ffe3           jmp rbx
+       ││   0x00401689      90             nop
+```
+
+The line where I loaded the address into `rbx` is in the address `0x00401661`.
+
+And look at how small is the opcode for the jump instruction! I even had to use a `nop` instruction to avoid shifting all the addresses in the binary.
+
+Now we can continue with the flow and finish the validation of the last 2 segments of the password!
 
 ## Stage 3: Validating the rest of the password
