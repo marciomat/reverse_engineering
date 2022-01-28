@@ -226,11 +226,13 @@ Assuming we survived so far, next we have some more random magic numbers math:
 
 First thing to notice is that the content of `eax` from the last stage is not used here since it got overwritten with `0x11` in the first line above.
 
-It's not hard to follow what the code is doing, we just need some patience to go line by line since it's all simple bits and bytes bein moved around.
+It's not hard to follow what the code is doing, we just need some patience to go line by line since it's all simple bits and bytes bein moved around. And the final result is stored in `rax`.
 
 One important detail is to realize that it still uses the byte number 11 (`0xb`) from the `xmm0`. So even though we're now validating the second group of 16 characters, the content of `xmm0` still influences here.
 
 > And be aware that the content of `xmm0` here is after it got XORed with that hardcoded sequence of random bytes (`str.dG46rskj8_457_:`).
+
+---
 
 Now the binary finally starts looking at the second group of 16 characters (i.e. the content of `xmm1`).
 
@@ -249,3 +251,22 @@ Now the binary finally starts looking at the second group of 16 characters (i.e.
 │      ┌──< 0x00401650      7538           jne failed_password
 ```
 
+Here we have a loop with `rcx` as the counter. The loop counts up to `0x10` (so 16 times).
+
+We can also see that `r8` contains the part of our password that was stored in `xmm1` (so characters from 16 to 31).
+
+Both `rcx` and `rbx` are reset right before the loop begins.
+
+In the first line of the loop we have the following instruction:
+
+```assembly
+mov bl, byte [r8 + rcx]
+```
+
+This is a common way to access the data pointed by `r8`, byte per byte, with each byte indexed by the counter `rcx`. And each byte is stored in `bl`.
+
+Again, more 'random' logic moving bytes around for each iteration of the loop. Remember, the loop has a counter from `0x00` to `0x10` (`0x10` not included in the iteration, so it loops 15x).
+
+And in the end, the accumulated result in `rax` shall be equal to zero, otherwise it fails.
+
+## Stage 3: Validating the rest of the password
