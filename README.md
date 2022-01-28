@@ -1,6 +1,6 @@
 # Reverse Engineering
 
-Write-ups for ReverseEngineering challenges that I've worked on.
+Write-ups for RE challenges that I've worked on.
 The main goal is to get more experience reverse engineering binaries using tools like [Radare2](https://rada.re/) and [Ghidra](https://ghidra-sre.org/).
 
 I've been using platforms like [HackTheBox](https://www.hackthebox.com/) and [Crackmes.one](https://crackmes.one) to hack the flags and passwords.
