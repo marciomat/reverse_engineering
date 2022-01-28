@@ -7,8 +7,8 @@ I've been using platforms like [HackTheBox](https://www.hackthebox.com/) and [Cr
 Some challenges involve creating a python script for brute-forcing the password, and other challenges are purely based on reading the assembly code.
 
 > This content can be visualized in both static page and github (README.md) modes:
-> - Static page link: [https://marciomat.github.io/reverse_engineering](https://marciomat.github.io/reverse_engineering)
-> - Github repo link: [https://github.com/marciomat/reverse_engineering](https://github.com/marciomat/reverse_engineering)
+> - Static page: [https://marciomat.github.io/reverse_engineering](https://marciomat.github.io/reverse_engineering)
+> - Github repo: [https://github.com/marciomat/reverse_engineering](https://github.com/marciomat/reverse_engineering)
 
 <br/>
 
