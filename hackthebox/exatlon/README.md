@@ -1,9 +1,5 @@
 > source: https://app.hackthebox.com/challenges/exatlon
 
-# Tools used
-
-- radare2
-
 # Files
 
 Input:

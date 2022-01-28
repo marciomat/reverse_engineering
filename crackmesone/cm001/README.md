@@ -1,9 +1,5 @@
 > source: https://crackmes.one/crackme/615888be33c5d4329c344f66
 
-# Tools used
-
-- radare2
-
 # Files
 
 Input:
