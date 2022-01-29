@@ -3,7 +3,7 @@
 LAST_CHAR = '~'
 FIRST_CHAR = '!'
 
-# Init list of 64 chars with first printable ASCII char for every position
+# Init list of 64 chars
 passw_list = ["1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", 
               "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", 
               "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", 
