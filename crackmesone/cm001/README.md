@@ -301,13 +301,13 @@ Anyways, after days banging my head against the well I found another piece of co
 ```
 
 And the reason why I believe this should be the continuation is because it's recovering data saved in these 2 memory addresses:
-`0x004040b0` and `0x004040a8`
+`0x004040b0` and `0x004040a8`. And then it proceeds to run some more validation on that data.
 
 But if you look at the instruction addresses, they're note close by! So we need a jump somewhere to make what I belive is the flow it should take.
 
 The only solution I came up with was to sneak in a jump instruction to replace the `div rbx` opcode above.
 
-If you look at the opcode for `div rbx`, it's quite small: `0x48f7f3`. So my jump opcode had to fit in there. And a regular `jmp 0x004013e0` instruction is bigger than that and wouldn't fit.
+But if you look at the opcode for `div rbx`, it's quite small: `0x48f7f3`. So my jump opcode had to fit in there. And a regular `jmp 0x004013e0` instruction is too big and wouldn't fit without corrupting the next instructions.
 
 So I first loaded the intended address (`0x004013e0`) into `rbx` and then used the opcode `jmp rbx`.
 
@@ -340,10 +340,65 @@ To this:
        ││   0x00401689      90             nop
 ```
 
-The line where I loaded the address into `rbx` is in the address `0x00401661`.
+The line where I loaded the destination address into `rbx` is in the 4th line:
+```assembly
+│      ││   0x00401661      48bbe0134000.  movabs rbx, 0x4013e0
+```
 
-And look at how small is the opcode for the jump instruction! I even had to use a `nop` instruction to avoid shifting all the addresses in the binary.
+And look at how small is the opcode for the `jmp rbx` instruction! I even had to use a `nop` instruction to avoid shifting all the addresses in the binary.
+
+This patched binary I saved separately: [patched_cm001](patched_cm001)
 
 Now we can continue with the flow and finish the validation of the last 2 segments of the password!
 
 ## Stage 3: Validating the rest of the password
+
+At this stage I realized that the binary doesn't really look at all the characters from the `xmm2` and `xmm3`.
+
+And it performs a very basic sequence, like hash style. This part was possible to just manually manipulate the password string manually and get it to pass. Took me less than 10min of try and error. And not worth going through it line by line.
+
+## So what is the password?
+
+As I had mentioned before, the stage 1 and stage 2 perform a very intensive loop over each character from `xmm0` and `xmm1` so it would take a script to basically brute-force to find a sequence of ASCII that would pass those validations.
+
+I created this ugly but functional python script to find me the first half of the password:
+[decode_pass.py](decode_pass.py)
+
+This script found this weird sequence of 64 characters:
+
+```
+$ ./decode_pass.py                          
+password found:
+11111111111112-@222222222222222l33333333333333334444444444444444
+```
+
+And as I mentioned before, the second half of the password I just cracked by hand with try and error since it was fairly simple and was faster than trying to update my script to brute-force it for me.
+
+The final answer:
+```
+$ ./patched_cm001 
+Input:
+11111111111112-@222222222222222l32333333333333334444444444667764
+You found the password:
+        11111111111112-@222222222222222l32333333333333334444444444667764
+```
+
+## One last mistery!
+
+After I found the password, I tried it in the original (unpatched) binary.
+
+I was sure it would crash since my debugger was always crashing at that `div rbx` instruction!
+
+Spoiler alert:
+
+```
+$ ./cm001        
+Input:
+11111111111112-@222222222222222l32333333333333334444444444667764
+You found the password:
+        11111111111112-@222222222222222l32333333333333334444444444667764
+```
+
+I have no clue what's going on here! 
+
+I hope to one day understand this...

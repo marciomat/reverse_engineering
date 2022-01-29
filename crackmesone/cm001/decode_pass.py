@@ -36,7 +36,6 @@ def stage_2(xmm0_xor, xmm1):
     for xmm1_chr in xmm1:
         rax = rax - ord(xmm1_chr)
         
-    print("rax = ", hex(rax), "     ", end="")
     return rax
 
 
@@ -100,9 +99,7 @@ while True:
     else:
         next_passw_xmm1()
         next_passw_xmm0()
-        print_passw()
-        print("", end="\r")
 
 
-print("\n\npassword found:")
+print("password found:")
 print_passw()
