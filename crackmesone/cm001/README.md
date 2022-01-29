@@ -287,7 +287,7 @@ The following instruction right after `div rbx` (not shown here) is where the `f
 
 Not sure why the last instruction of this function would end with `div rbx`.
 
-Anyways, after days banging my head against the well I found another piece of code that really seems to be the continuation of the above block of code:
+Anyways, after days banging my head against the wall I found another piece of code that really seems to be the continuation of the above block of code:
 
 ```assembly
             0x004013e0      488b3dc92c00.  mov rdi, qword [0x004040b0]    ; [0x4040b0:8]
