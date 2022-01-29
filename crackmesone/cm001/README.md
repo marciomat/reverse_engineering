@@ -261,7 +261,7 @@ mov bl, byte [r8 + rcx]
 
 This is a common way to access the data pointed by `r8`, byte per byte, with each byte indexed by the counter `rcx`. And each byte is stored in `bl`.
 
-Again, more 'random' logic moving bytes around for each iteration of the loop. Remember, the loop has a counter from `0x00` to `0x10` (`0x10` not included in the iteration, so it loops 15x).
+Again, more 'random' logic moving bytes around for each iteration of the loop. Remember, the loop has a counter from `0x00` to `0x10` (`0x10` not included in the iteration, so it loops 16x).
 
 And in the end, the accumulated result in `rax` shall be equal to zero, otherwise it fails.
 
