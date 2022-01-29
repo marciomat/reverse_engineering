@@ -355,7 +355,7 @@ Now we can continue with the flow and finish the validation of the last 2 segmen
 
 At this stage I realized that the binary doesn't really look at all the characters from the `xmm2` and `xmm3`.
 
-And it performs a very basic sequence, like hash style. This part was possible to just manually manipulate the password string manually and get it to pass. Took me less than 10min of try and error. And not worth going through it line by line.
+And it performs a very basic hash with the characters. This part was possible to just manually manipulate the password string manually and get it to pass. Took me less than 10min of try and error. And not worth going through it line by line.
 
 ## So what is the password?
 
