@@ -313,32 +313,32 @@ So I first loaded the intended address (`0x004013e0`) into `rbx` and then used t
 
 To visualize the before and after. The first block of code went from this:
 
-```assembly
+<pre>
 │      ││   0x00401652      66480f7ed8     movq rax, xmm3              ; arg10
 │      ││   0x00401657      66480f3a16d3.  pextrq rbx, xmm2, 1
 │      ││   0x0040165e      4831d8         xor rax, rbx
-│      ││   0x00401661      48bb031223ff.  movabs rbx, 0xffff231203
+<b>│      ││   0x00401661      48bb031223ff.  movabs rbx, 0xffff231203</b>
 │      ││   0x0040166b      66490f3a16d8.  pextrq r8, xmm3, 1
 │      ││   0x00401672      66490f7ed1     movq r9, xmm2               ; arg9
 │      ││   0x00401677      4c890c25b040.  mov qword [0x4040b0], r9    ; [0x4040b0:8]=0
 │      ││   0x0040167f      4c890425a840.  mov qword [0x4040a8], r8    ; [0x4040a8:8]=0
-└      ││   0x00401687      48f7f3         div rbx
-```
+<b>└      ││   0x00401687      48f7f3         div rbx</b>
+</pre>
 
 To this:
 
-```assembly
+<pre>
 │      ││   0x00401652      66480f7ed8     movq rax, xmm3              ; arg10
 │      ││   0x00401657      66480f3a16d3.  pextrq rbx, xmm2, 1
 │      ││   0x0040165e      4831d8         xor rax, rbx
-│      ││   0x00401661      48bbe0134000.  movabs rbx, 0x4013e0
+<b>│      ││   0x00401661      48bbe0134000.  movabs rbx, 0x4013e0</b>
 │      ││   0x0040166b      66490f3a16d8.  pextrq r8, xmm3, 1
 │      ││   0x00401672      66490f7ed1     movq r9, xmm2               ; arg9
 │      ││   0x00401677      4c890c25b040.  mov qword [0x4040b0], r9    ; [0x4040b0:8]=0
 │      ││   0x0040167f      4c890425a840.  mov qword [0x4040a8], r8    ; [0x4040a8:8]=0
-└      ││   0x00401687      ffe3           jmp rbx
-       ││   0x00401689      90             nop
-```
+<b>└      ││   0x00401687      ffe3           jmp rbx
+       ││   0x00401689      90             nop</b>
+</pre>
 
 The line where I loaded the destination address into `rbx` is in the 4th line:
 ```assembly
