@@ -317,7 +317,7 @@ To visualize the before and after. The first block of code went from this:
 │      ││   0x00401652      66480f7ed8     movq rax, xmm3              ; arg10
 │      ││   0x00401657      66480f3a16d3.  pextrq rbx, xmm2, 1
 │      ││   0x0040165e      4831d8         xor rax, rbx
-<mark>│      ││   0x00401661      48bb031223ff.  movabs rbx, 0xffff231203</mark>
+<span style="background-color: #FFFF00">│      ││   0x00401661      48bb031223ff.  movabs rbx, 0xffff231203</span>
 │      ││   0x0040166b      66490f3a16d8.  pextrq r8, xmm3, 1
 │      ││   0x00401672      66490f7ed1     movq r9, xmm2               ; arg9
 │      ││   0x00401677      4c890c25b040.  mov qword [0x4040b0], r9    ; [0x4040b0:8]=0
