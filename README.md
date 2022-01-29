@@ -6,7 +6,7 @@ The main goal is to get more experience reverse engineering binaries using tools
 I've been using platforms like [HackTheBox](https://www.hackthebox.com/) and [Crackmes.one](https://crackmes.one) to hack the flags and passwords.
 Some challenges involve creating a python script for brute-forcing the password, and other challenges are purely based on reading the assembly code.
 
-> This content can be visualized in both static page and github:
+> This content is better visualized in static page format but can also be viewed in github:
 > - Static page: [https://marciomat.github.io/reverse_engineering](https://marciomat.github.io/reverse_engineering)
 > - Github repo: [https://github.com/marciomat/reverse_engineering](https://github.com/marciomat/reverse_engineering)
 
