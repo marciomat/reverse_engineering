@@ -15,6 +15,7 @@ Some challenges involve creating a python script for brute-forcing the password,
 # HackTheBox
 
 - [exatlon_v1](./hackthebox/exatlon)
+- [BombsLanded](./hackthebox/bombsLanded)
 
 <br/>
 
