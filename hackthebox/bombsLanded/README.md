@@ -182,7 +182,8 @@ This caught my eyes since it's modifying one of the addresses of interest (`0x80
 
 It's calling the syscall `ptrace()` and comparing the returned value with `0xffffffff` (which actually means `-1`).
 
-This is one way to try to detect if the binary is being debugged with GDB!
+So what does it mean?
+This is call to `ptrace()` is probably being used to detect if the binary is being debugged with GDB!
 
 Very sneaky!
 
