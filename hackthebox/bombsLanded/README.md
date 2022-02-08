@@ -180,7 +180,7 @@ For the sake of time I won't go over the entire investigation but after some dig
 
 This caught my eyes since it's modifying one of the addresses of interest (`0x804934c`).
 
-It's calling the syscall `ptrace()` and comparing the returned value with `0xffffffff` (which actually means `-1`).
+It's also calling the syscall `ptrace()` and comparing the returned value with `0xffffffff` (which actually means `-1`).
 
 So what does it mean?
 This call to `ptrace()` is probably being used to detect if the binary is being debugged with GDB!
@@ -199,7 +199,7 @@ Very sneaky!
 
 ## Patching the binary
 
-After that I decided to patch the binary specially knowing already which execution flow I wanted to explore from the `main()` function.
+After that I decided to patch the binary, specially knowing already which execution flow I wanted to explore from the `main()` function.
 
 The `main()` went from this:
 
@@ -229,7 +229,48 @@ To this:
 
 So with these changes in place we removed all the protections in place.
 
-## Reading the password
+## Reading the password from the user
+
+So now we're finally at the long-awaited address `0x8048a18`!
+
+At first there's not much going on (at least not that I can understand!).
+
+But eventually we get to this section where it asks for the user's input, printing the string `input password: `
+
+```assembly
+            0xf7f7c0af      50             push eax                    ; (pstr 0xff96975b) "input password: "
+            0xf7f7c0b0      b8b0860408     mov eax, sym.imp.printf     ; 0x80486b0
+            0xf7f7c0b5      ffd0           call eax                    ; sym.imp.printf
+            0xf7f7c0b7      83c410         add esp, 0x10
+            0xf7f7c0ba      83ec04         sub esp, 4
+            0xf7f7c0bd      6a11           push 0x11                   ; 17 ; esp
+            0xf7f7c0bf      6a00           push 0
+            0xf7f7c0c1      8d4593         lea eax, [ebp - 0x6d]
+            0xf7f7c0c4      50             push eax
+            0xf7f7c0c5      b850870408     mov eax, sym.imp.memset     ; 0x8048750
+            0xf7f7c0ca      ffd0           call eax                    ; sym.imp.memset
+            0xf7f7c0cc      83c410         add esp, 0x10
+            0xf7f7c0cf      83ec08         sub esp, 8
+            0xf7f7c0d2      8d45ba         lea eax, [ebp - 0x46]
+            0xf7f7c0d5      50             push eax
+            0xf7f7c0d6      8d4590         lea eax, [ebp - 0x70]
+            0xf7f7c0d9      50             push eax
+            0xf7f7c0da      b860870408     mov eax, sym.imp.__isoc99_scanf    ; 0x8048760
+            0xf7f7c0df      ffd0           call eax
+```
+
+This is a good sign and means we should be close to where it will validate the password.
+
+## strncmp() saves the day!
+
+We keep going with the flow and we finally get to this call:
+
+```assembly
+            0xf7f7c107      b8e78a0408     mov eax, sym.strncmp
+            0xf7f7c10c      ffd0           call eax
+```
+
+This `strncmp()` is probably a custom-made version of the C-library function. So it's not very obvious that we have to look inside it, but we should!
 
 
 
