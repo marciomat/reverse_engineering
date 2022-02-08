@@ -229,7 +229,7 @@ To this:
 
 > There are many different ways to achive the same goal here, but I wanted to keep as much as possible the same look and feel from the original structure
 
-So with these changes in place we removed all the protections from the code.
+So with these changes in place we removed all the initial protections from the code.
 
 ## Reading the password from the user
 
@@ -274,33 +274,102 @@ We keep going with the flow and we finally get to this call:
 
 This `strncmp()` is probably a custom-made version of the C-library function. So it's not very obvious that we have to look inside it, but we should!
 
-
-
-# WIP Notes
-
-Important code found in:
-jg 0x8048a18
-
-Then enters this call:
+```assembly
+┌ 260: int sym.strncmp (const char *s1, const char *s2, size_t n);
+│           ; var int32_t var_18h @ ebp-0x18
+│           ; var char *var_14h @ ebp-0x14
+│           ; var int32_t var_10h @ ebp-0x10
+│           ; var int32_t var_ch @ ebp-0xc
+│           ; arg const char *s2 @ ebp+0x8
+│           ; arg size_t s1 @ ebp+0xc
+│           ; arg uint32_t arg_10h @ ebp+0x10
+│           0x08048ae7      55             push ebp
+│           0x08048ae8      89e5           mov ebp, esp
+│           0x08048aea      83ec18         sub esp, 0x18
+│           0x08048aed      83ec08         sub esp, 8
+│           0x08048af0      68a28c0408     push 0x8048ca2
+│           0x08048af5      6aff           push 0xffffffffffffffff     ; const char *s1
+│           0x08048af7      e844d9eaef     call dlsym                  ;[1]; RELOC 32 dlsym
+│           0x08048afc      83c410         add esp, 0x10
+│           0x08048aff      8945f0         mov dword [var_10h], eax
+│           0x08048b02      837d100a       cmp dword [arg_10h], 0xa
+│       ┌─< 0x08048b06      0f85c9000000   jne 0x8048bd5
+│       │   0x08048b0c      83ec0c         sub esp, 0xc
+│       │   0x08048b0f      ff750c         push dword [s1]             ; const char *s1
+│       │   0x08048b12      e80981d4ef     call strlen                 ;[2]; RELOC 32 strlen
+│       │   0x08048b17      83c410         add esp, 0x10
+│       │   0x08048b1a      83c001         add eax, 1
+│       │   0x08048b1d      83ec0c         sub esp, 0xc
+│       │   0x08048b20      50             push eax                    ; const char *s1
+│       │   0x08048b21      e81aced3ef     call malloc
 ```
-0x08048aba      ffd0           call eax
+
+In the code above we can see that it calls `strlen()` and passes `s1` as argument (i.e. `push dword [s1]`).
+
+This means in `eax` we will have the length of `s1`. It then adds `1` to it and passes this value to `malloc()`.
+
+Again, the return of `malloc()` will be in `eax`. So `eax` in this case will be pointing to an allocated memory of size `strlen(s1) + 1`.
+
+Next, it saves the address of the newly allocated memory in a local variable `var_14h`:
+
+```assembly
+│       │   0x08048b21      e81aced3ef     call malloc
+│       │   0x08048b26      83c410         add esp, 0x10
+│       │   0x08048b29      8945ec         mov dword [var_14h], eax
+│       │   0x08048b2c      c745f4000000.  mov dword [var_ch], 0
+│      ┌──< 0x08048b33      eb1c           jmp 0x8048b51
 ```
 
-Then it will ask for the password:
+It then proceeds into a loop of size `strlen(s1)`:
 
+> I've renamed 2 local variables for clarity: 
+> - `output_buf`: former `var_14h`
+> - `count`: former `var_ch`
 
-Then we should enter this strcmp call:
+```assembly
+│     ┌───> 0x08048b35      8b55f4         mov edx, dword [count]
+│     ╎││   0x08048b38      8b45ec         mov eax, dword [output_buf]
+│     ╎││   0x08048b3b      01d0           add eax, edx
+│     ╎││   0x08048b3d      8b4df4         mov ecx, dword [count]
+│     ╎││   0x08048b40      8b550c         mov edx, dword [s1]
+│     ╎││   0x08048b43      01ca           add edx, ecx
+│     ╎││   0x08048b45      0fb612         movzx edx, byte [edx]
+│     ╎││   0x08048b48      83f20a         xor edx, 0xa
+│     ╎││   0x08048b4b      8810           mov byte [eax], dl
+│     ╎││   0x08048b4d      8345f401       add dword [count], 1
+│     ╎└──> 0x08048b51      83ec0c         sub esp, 0xc
+│     ╎ │   0x08048b54      ff750c         push dword [s1]             ; const char *s1
+│     ╎ │   0x08048b57      e8c490dbef     call strlen                 ;[2]; RELOC 32 strlen
+│     ╎ │   0x08048b5c      83c410         add esp, 0x10
+│     ╎ │   0x08048b5f      89c2           mov edx, eax
+│     ╎ │   0x08048b61      8b45f4         mov eax, dword [count]
+│     ╎ │   0x08048b64      39c2           cmp edx, eax
+│     └───< 0x08048b66      77cd           ja 0x8048b35
 ```
-0xf7f17107      b8e78a0408     mov eax, sym.strncmp
-```
 
-Inside this call there will be a loop of 0x10 and the password will be created there, using var_14h as pointer.
+Quick overview of what the loop is doing:
+
+1. Gets char from `s1` (indexed by `count`)
+2. Performs a XOR operation between the char from `s1` and `0xa`
+3. The result of the XOR stores in the `output_buf`
+4. Repeat `strlen(s1)` times
+
+So it seems like we have an encoded password passed to `strncmp()` in the `s1` argument. Let's take a look:
 
 ```
-:> px @ ebp - 0x14
+:> px 22 @ 0xffe8b6ac
 - offset -   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF
-0xffe1e8d4  c099 2908
-
-:> ps @ 0x082999c0
-younevergoingtofindme
+0xffe8b6ac  7365 7f64 6f7c 6f78 6d65 6364 6d7e 656c  se.do|oxmecdm~el
+0xffe8b6bc  6364 6e67 6f00                           cdngo.
 ```
+
+And from the loop above we know that it took each byte and performex a `XOR 0xa`, resulting in:
+
+```
+:> px 22 @ 0x090a09c0
+- offset -   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF
+0x090a09c0  796f 756e 6576 6572 676f 696e 6774 6f66  younevergoingtof
+0x090a09d0  696e 646d 6500                           indme.
+```
+
+And the flag popped out!
