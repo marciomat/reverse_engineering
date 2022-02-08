@@ -185,8 +185,51 @@ It's calling the syscall `ptrace()` and comparing the returned value with `0xfff
 So what does it mean?
 This call to `ptrace()` is probably being used to detect if the binary is being debugged with GDB!
 
+It can be easily tested with this simple code below:
+
+```c
+if (ptrace(PTRACE_TRACEME, 0, NULL, 0) == -1) {
+    printf("Debugger detected!\n");
+} else {
+    printf("No debugger detected\n");
+}
+```
+
 Very sneaky!
 
+## Patching the binary
+
+After that I decided to patch the binary specially knowing already which execution flow I wanted to explore from the `main()` function.
+
+The `main()` went from this:
+
+<pre>
+│           0x080489b6      8b00           mov eax, dword [eax]        ; oeax
+│           0x080489b8      39c1           cmp ecx, eax                ; edi ; edi
+<mark>│       ┌─< 0x080489ba      7705           ja 0x80489c1</mark>
+│       │   0x080489bc      833a04         cmp dword [edx], 4          ; edi ; edi
+<mark>│      ┌──< 0x080489bf      7f57           jg 0x8048a18</mark>
+│      ││   ; CODE XREF from main @ 0x80489ba
+│      │└─> 0x080489c1      833a03         cmp dword [edx], 3          ; edi
+│      │┌─< 0x080489c4      7e37           jle 0x80489fd
+</pre>
+
+To this:
+
+<pre>
+│           0x080489b6      8b00           mov eax, dword [eax]
+│           0x080489b8      39c1           cmp ecx, eax
+<mark>│           0x080489ba      90             nop
+│           0x080489bb      90             nop</mark>
+│           0x080489bc      833a04         cmp dword [edx], 4
+<mark>│       ┌─< 0x080489bf      eb57           jmp 0x8048a18</mark>
+        │   0x080489c1      833a03         cmp dword [edx], 3
+       ┌──< 0x080489c4      7e37           jle 0x80489fd
+</pre>
+
+So with these changes in place we removed all the protections in place.
+
+## Reading the password
 
 
 
