@@ -199,18 +199,18 @@ Very sneaky!
 
 ## Patching the binary
 
-After that I decided to patch the binary, specially knowing already which execution flow I wanted to explore from the `main()` function.
+After that I decided to patch the binary. Specially since I already knew which execution flow I wanted to explore from the `main()` function.
 
 The `main()` went from this:
 
 <pre>
-│           0x080489b6      8b00           mov eax, dword [eax]        ; oeax
-│           0x080489b8      39c1           cmp ecx, eax                ; edi ; edi
+│           0x080489b6      8b00           mov eax, dword [eax]
+│           0x080489b8      39c1           cmp ecx, eax
 <mark>│       ┌─< 0x080489ba      7705           ja 0x80489c1</mark>
-│       │   0x080489bc      833a04         cmp dword [edx], 4          ; edi ; edi
+│       │   0x080489bc      833a04         cmp dword [edx], 4
 <mark>│      ┌──< 0x080489bf      7f57           jg 0x8048a18</mark>
 │      ││   ; CODE XREF from main @ 0x80489ba
-│      │└─> 0x080489c1      833a03         cmp dword [edx], 3          ; edi
+│      │└─> 0x080489c1      833a03         cmp dword [edx], 3
 │      │┌─< 0x080489c4      7e37           jle 0x80489fd
 </pre>
 
@@ -350,8 +350,8 @@ It then proceeds into a loop of size `strlen(s1)`:
 Quick overview of what the loop is doing:
 
 1. Gets char from `s1` (indexed by `count`)
-2. Performs a XOR operation between the char from `s1` and `0xa`
-3. The result of the XOR stores in the `output_buf`
+2. Performs a XOR operation between the char from `s1` and a hardcoded value of `0xa`
+3. The result of the XOR is stored in the `output_buf`
 4. Repeat `strlen(s1)` times
 
 So it seems like we have an encoded password passed to `strncmp()` in the `s1` argument. Let's take a look:
