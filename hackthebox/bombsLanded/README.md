@@ -227,6 +227,8 @@ To this:
        ┌──< 0x080489c4      7e37           jle 0x80489fd
 </pre>
 
+> There are many different ways to achive the same goal here, but I wanted to keep as much as possible the same look and feel from the original structure
+
 So with these changes in place we removed all the protections in place.
 
 ## Reading the password from the user
