@@ -229,7 +229,7 @@ To this:
 
 > There are many different ways to achive the same goal here, but I wanted to keep as much as possible the same look and feel from the original structure
 
-So with these changes in place we removed all the protections in place.
+So with these changes in place we removed all the protections from the code.
 
 ## Reading the password from the user
 
