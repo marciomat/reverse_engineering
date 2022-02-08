@@ -363,7 +363,7 @@ So it seems like we have an encoded password passed to `strncmp()` in the `s1` a
 0xffe8b6bc  6364 6e67 6f00                           cdngo.
 ```
 
-And from the loop above we know that it took each byte and performed a `XOR 0xa`, resulting in:
+And from the loop above we know that for each byte it performed a `XOR 0xa`, resulting in:
 
 ```
 :> px 22 @ 0x090a09c0
