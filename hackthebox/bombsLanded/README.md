@@ -153,7 +153,7 @@ This part took me days to have any kind of progress. My first thought was that w
 
 The answer came when I started looking at what happens before the call to `main()`.
 
-For the sake of time I won't go over the entire investigation but after some investigation I found this piece of code:
+For the sake of time I won't go over the entire investigation but after some digging I found this piece of code:
 
 <pre>
             0x08048900      55             push ebp                    ; esp
