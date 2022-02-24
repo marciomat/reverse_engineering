@@ -57,6 +57,6 @@ This is the first part of the code where the initial checks are executed:
     ┌─────< 0x564966c05a06      0f85c7000000   jne 0x564966c05ad3
 ```
 
-From my comments we can see where it checks for the password lenght (41) and also checks if the password starts with `picoCTF{` and ends with `}`.
+From my comments in the code above we can see where it checks for the password lenght (41) and also checks if the password starts with `picoCTF{` and ends with `}`.
 
 So now we know how the password has to look like, and we also know that the actual password will have 32 characters (41 - `picoCTF{}`).
