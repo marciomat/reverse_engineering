@@ -66,7 +66,7 @@ So now we know how the password has to look like, and we also know that the actu
 Here is the part where I got lost. The code that comes after this initial check seemed very confusing to me.
 
 So I decided to look at the code through Ghidra to see what kind of C code it would generate.
-I won't insert the entire code but the most important part is this:
+I won't paste the entire code here but the most important part is this:
 
 ```c
           if (lStack176 == 0) {
@@ -143,7 +143,7 @@ I won't insert the entire code but the most important part is this:
               FUN_00106650();
 ```
 
-We can see the function `FUN_001054e0()` and all 4 times the second parameter is the same `&local_128`, and the third parameter is a number incrementing from `0` to `3`.
+We can see the function `FUN_001054e0()` is called 4 times. And the second parameter is always the same `&local_128`, while the third parameter is a number incrementing from `0` to `3`.
 
 The interesting part is that the first time this function is called, `local_128` contains the password we typed!
 After returning from the first call, `local_128` will have a messy sequence of bytes. Probably `FUN_001054e0()` scrambles the password string.
@@ -153,6 +153,37 @@ I'm not a cryptography expert, so I can't recognize what this function is doing.
 But by looking at one of the write-ups, it seems like this function performs a S-Box transformation.
 
 Since it would take me way too long to understand this function I took another path.
+
+But before moving forward, there are 2 more things to notice in the code above:
+
+1. We have a long list of checks inside an `if` statement. And we have 32 lines of checks! Remeber that our password has 32 characeters?
+2. If all checks in the `if` statement are true, it calls the function `FUN_001066a0()`. And not surprisingly, this function prints `Success`!
+
+> Remember when I said this code has some obfuscation? This is the code of the function that prints `Success`:
+> ```c
+> void FUN_001066a0(void)
+> 
+> {
+>   undefined **local_30;
+>   undefined8 local_28;
+>   undefined8 local_20;
+>   char *local_10;
+>   undefined8 local_8;
+>   
+>   local_30 = &PTR_DAT_00348298;
+>   local_28 = 1;
+>   local_20 = 0;
+>   local_10 = "Invalid password\n";
+>   local_8 = 0;
+>   FUN_001083b0(&local_30);
+>   FUN_0011f1d0(0);
+>   do {
+>     invalidInstructionException();
+>   } while( true );
+> }
+> ```
+>
+> Looks like it's printing `Invalid password`, right? Wrong!...
 
 ## Time for Python!
 
