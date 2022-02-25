@@ -45,7 +45,7 @@ This is the first part of the code where the initial checks are executed:
        ││   0x564966c059d4      488d059d4303.  lea rax, [0x564966c39d78]
        ││   0x564966c059db      4839c3         cmp rbx, rax
       ┌───< 0x564966c059de      7413           je 0x564966c059f3
-      │││   0x564966c059e0      48b87069636f.  movabs rax, 0x7b4654436f636970    ; 'picoCTF{'
+      │││   0x564966c059e0      48b87069636f.  movabs rax, 0x7b4654436f636970  ; check if password starts with 'picoCTF{'
       │││   0x564966c059ea      483903         cmp qword [rbx], rax
      ┌────< 0x564966c059ed      0f85e0000000   jne 0x564966c05ad3
      ││││   ; CODE XREF from rip @ +0x19
@@ -60,3 +60,85 @@ This is the first part of the code where the initial checks are executed:
 From my comments in the code above we can see where it checks for the password lenght (41) and also checks if the password starts with `picoCTF{` and ends with `}`.
 
 So now we know how the password has to look like, and we also know that the actual password will have 32 characters (41 - `picoCTF{}`).
+
+## Lost in assembly
+
+Here is the part where I got lost. The code that comes after this initial check seemed very confusing to me.
+
+So I decided to look at the code through Ghidra to see what kind of C code it would generate.
+I won't insert the entire code but the most important part is this:
+
+```c
+          if (lStack176 == 0) {
+            local_128 = (undefined **)*local_c0;
+            uStack288 = local_c0[1];
+            local_118 = local_c0[2];
+            uStack272 = *(undefined4 *)(local_c0 + 3);
+            uStack268 = *(undefined4 *)((long)local_c0 + 0x1c);
+            lStack176 = lStack176 + 0x20;
+            FUN_001054e0(local_70,&local_128,0);
+            uStack272 = uStack88;
+            uStack268 = uStack84;
+            FUN_001054e0(local_50,&local_128,1);
+            uStack272 = uStack56;
+            uStack268 = uStack52;
+            FUN_001054e0(&local_a8,&local_128,2);
+            uStack272 = uStack144;
+            uStack268 = uStack140;
+            FUN_001054e0(&local_e0,&local_128,3);
+            local_e9 = local_dd;
+            local_e3 = local_dc;
+            local_ec = local_db;
+            local_e1 = local_da;
+            local_f0 = local_d9;
+            local_e7 = local_d8;
+            local_e2 = local_d6;
+            local_ee = local_d5;
+            local_e5 = local_d3;
+            local_f1 = local_d1;
+            local_ed = local_d0;
+            local_e6 = local_cf;
+            local_e4 = local_ce;
+            local_ea = local_cc;
+            local_eb = local_cb;
+            local_ef = local_ca;
+            local_e8 = local_c4;
+            local_f2 = local_c2;
+            local_128 = (undefined **)0x19;
+            local_f5 = local_de;
+            if ((((((local_c7 == -0x1a) && (local_128 = (undefined **)0x0, local_e0 == '\x1f')) &&
+                  (local_128 = (undefined **)0xe, local_d2 == -7)) &&
+                 ((local_128 = (undefined **)0x13, local_cd == 't' &&
+                  (local_128 = (undefined **)0x17, local_c9 == '\"')))) &&
+                ((((local_128 = (undefined **)0x1, local_df == 'h' &&
+                   ((local_128 = (undefined **)0x1d, local_c3 == -7 &&
+                    (local_128 = (undefined **)0x1b, local_c5 == -0x39)))) &&
+                  ((local_128 = (undefined **)0x1a, local_c6 == -0x73 &&
+                   (((((local_128 = (undefined **)0xc, local_d4 == '\"' &&
+                       (local_128 = (undefined **)0x1f, local_c1 == '{')) &&
+                      (local_128 = (undefined **)0x6, local_da == ':')) &&
+                     ((local_128 = (undefined **)0xa, local_d6 == -0x52 &&
+                      (local_128 = (undefined **)0xf, local_d1 == 'H')))) &&
+                    (local_128 = (undefined **)0x1e, local_c2 == '1')))))) &&
+                 (((((local_128 = (undefined **)0x7, local_d9 == -0x35 &&
+                     (local_128 = (undefined **)0xb, local_d5 == -0x35)) &&
+                    ((local_128 = (undefined **)0x5, local_db == '\"' &&
+                     (((local_128 = (undefined **)0x16, local_ca == 'F' &&
+                       (local_128 = (undefined **)0x10, local_d0 == '\x05')) &&
+                      (local_128 = (undefined **)0x15, local_cb == -0x32)))))) &&
+                   ((local_128 = (undefined **)0x3, local_dd == '>' &&
+                    (local_128 = (undefined **)0x14, local_cc == -0x33)))) &&
+                  (local_128 = (undefined **)0x8, local_d8 == '+')))))) &&
+               ((((local_128 = (undefined **)0x1c, local_c4 == '\x12' &&
+                  (local_128 = (undefined **)0xd, local_d3 == ' ')) &&
+                 ((local_128 = (undefined **)0x11, local_cf == '{' &&
+                  (((local_128 = (undefined **)0x2, local_de == 'P' &&
+                    (local_128 = (undefined **)0x9, local_d7 == -0x7d)) &&
+                   (local_128 = (undefined **)0x4, local_dc == -0x48)))))) &&
+                ((local_128 = (undefined **)0x18, local_c8 == -0x31 &&
+                 (local_128 = (undefined **)0x12, local_ce == '{')))))) {
+              FUN_001066a0();
+            }
+            else {
+              FUN_00106650();
+```
