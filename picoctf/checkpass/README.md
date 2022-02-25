@@ -61,7 +61,7 @@ From my comments in the code above we can see where it checks for the password l
 
 So now we know how the password has to look like, and we also know that the actual password will have 32 characters (41 - `picoCTF{}`).
 
-## Lost in assembly
+## Lost in assembly, saved by Ghidra
 
 Here is the part where I got lost. The code that comes after this initial check seemed very confusing to me.
 
@@ -142,3 +142,17 @@ I won't insert the entire code but the most important part is this:
             else {
               FUN_00106650();
 ```
+
+We can see the function `FUN_001054e0()` and all 4 times the second parameter is the same `&local_128`, and the third parameter is a number incrementing from `0` to `3`.
+
+The interesting part is that the first time this function is called, `local_128` contains the password we typed!
+After returning from the first call, `local_128` will have a messy sequence of bytes. Probably `FUN_001054e0()` scrambles the password string.
+And after that `FUN_001054e0()` is called 3 more times, to scramble even more our password.
+
+I'm not a cryptography expert, so I can't recognize what this function is doing.
+But by looking at one of the write-ups, it seems like this function performs a S-Box transformation.
+
+Since it would take me way too long to understand this function I took another path.
+
+## Time for Python!
+
