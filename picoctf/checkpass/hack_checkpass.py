@@ -64,7 +64,7 @@ for i in range(32):
                 break
     
     print("Index of next char to crack: ", i_chr)
-    print("Burteforcing char...")
+    print("Brute-forcing char...")
     
     # Part 2: brute-force the char
     for ch_1 in range(48, 125, 1):                      # iterate chars from '0' to '}'
