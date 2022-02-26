@@ -209,7 +209,7 @@ The principle is:
 > 4. Replay the binary again with the dummy password, but this time changing just the first character (from `Z` to `b` for ex)
 > 5. Compare the local var with the stored value.
 > 6. If they're the same, this is not the character that the binary is looking at. So go ahead and change the next character of the dummy password and repeat.
-> 7. If the value changed so we have a bingo!
+> 7. If the value changed, we have a bingo!
 
 With this procedure we can determine which character the `if` statement is currently validating.
 Now it's time to brute-force this character and try every printable ASCII.
