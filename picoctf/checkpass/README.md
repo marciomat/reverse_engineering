@@ -146,11 +146,11 @@ I won't paste the entire code here but the most important part is this:
 We can see the function `FUN_001054e0()` is called 4 times. And the second parameter is always the same `&local_128`, while the third parameter is a number incrementing from `0` to `3`.
 
 The interesting part is that the first time this function is called, `local_128` contains the password we typed!
-After returning from the first call, `local_128` will have a messy sequence of bytes. Probably `FUN_001054e0()` scrambles the password string.
+After returning from the first call, `local_128` will have a messy sequence of bytes.
 And after that `FUN_001054e0()` is called 3 more times, to scramble even more our password.
 
 I'm not a cryptography expert, so I can't recognize what this function is doing.
-But by looking at one of the write-ups, it seems like this function performs a S-Box transformation.
+But by looking at the write-up for this challenge, it seems like this function performs a S-Box transformation.
 
 Since it would take me way too long to understand this function I took another path.
 
@@ -159,7 +159,7 @@ But before moving forward, there are 2 more things to notice in the code above:
 1. We have a long list of checks inside an `if` statement. And we have 32 lines of checks! Remeber that our password has 32 characeters?
 2. If all checks in the `if` statement are true, it calls the function `FUN_001066a0()`. And not surprisingly, this function prints `Success`!
 
-> Remember when I said this code has some obfuscation? This is the code of the function that prints `Success`:
+> Note: Remember when I said this code has some obfuscation? This is the code of the function that prints `Success`:
 > ```c
 > void FUN_001066a0(void)
 > 
@@ -186,4 +186,31 @@ But before moving forward, there are 2 more things to notice in the code above:
 > Looks like it's printing `Invalid password`, right? Wrong!...
 
 ## Time for Python!
+
+If my approach isn't by reverse-engineering `FUN_001054e0()`, I can try to brute-force through the checks?
+
+This is a different brute-force technique (at least for me), since I can't easily replicate the contents of `FUN_001054e0()` inside my python script.
+So I decided to try something new and use `r2pipe`, which is describe as `The simplest and most effective way to script radare2`.
+
+You can check the code [here](hack_checkpass.py).
+
+The main idea of the script is to first run the binary with a dummy password:
+`picoCTF{ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ}`
+
+We know already that this password will pass through the basic checks.
+
+But it will fail at the very first check in the `if` statement we saw in the Ghidra code.
+Since it looks like each line of the `if` statement is checking one character of the password, it means we can probably crack the password one character at a time!
+
+The first problem is: We don't know which character of the password each line is checking since it's all scrambled.
+I couldn't figure out an easy way to trace back the position of each character (another win for the obfuscation!) so I decided to let my python script figure it out.
+
+The principle is:
+
+1. I run the binary with my current dummy password
+2. Check what value my local var has (the one that is being checked). Remember, this local var is directly affected by one of the characters of our input password
+3. Store this value. For now it has no meaning
+4. Replay the binary with another dummy password, but this time changing just the first character (from `Z` to `b` for ex)
+5. Compare the local var with the stored value. If they're the same, this is not the character this line of the `if` is checking
+6. If the value changed so we have a bingo!
 
