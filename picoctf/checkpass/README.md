@@ -206,14 +206,12 @@ I couldn't figure out an easy way to trace back the position of each character (
 
 The principle is:
 
-```
 1. Run the binary with a dummy password
 2. Store the value of the local var that is being checked. Remember, this local var is directly affected by one of the characters of our input password
 4. Replay the binary with another dummy password, but this time changing just the first character (from `Z` to `b` for ex)
 5. Compare the local var with the stored value.
 6. If they're the same, this is not the character that the binary is looking at. So go ahead and change the next character of the dummy password and repeat.
 7. If the value changed so we have a bingo!
-```
 
 With this procedure we can determine which character the `if` statement is currently validating.
 Now it's time to brute-force this character and try every printable ASCII.
