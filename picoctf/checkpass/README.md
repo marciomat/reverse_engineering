@@ -12,7 +12,6 @@ Output:
 # The challenge
 
 This binary receives the password input via the first call parameter.
-And we have to find the right password:
 
 ```
 $ ./checkpass password_attempt
@@ -22,8 +21,8 @@ Invalid length
 The first obvious thing to notice is the error message.
 It gives us a first clue since it tells us that the legnth is invalid.
 
-So if we feel like bruteforcing it we can try multiple different passwords until we find the right lenght.
-But later on we will find the check in the code.
+So if we feel like brute-forcing it we can try multiple different passwords until we find the right lenght.
+But we won't need that.
 
 # Solution
 
