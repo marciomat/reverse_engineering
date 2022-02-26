@@ -272,7 +272,7 @@ ZZZZZZZZZZbZZZZZZZZZZZZZZZZZZZZZ
 --------------------
 ZZZZZZZZZZZbZZZZZZZZZZZZZZZZZZZZ
 Index of next char to crack:  11
-Burteforcing char...            
+Brute-forcing char...            
 --------------------
 ZZZZZZZZZZZ0ZZZZZZZZZZZZZZZZZZZZ
 --------------------
