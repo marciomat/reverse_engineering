@@ -5,14 +5,14 @@ import r2pipe
 # Offset of each `cmp` instruction that validates a char of the password
 check_offset = [0x5d15, 0x5d42, 0x5d71, 0x5da0, 0x5dcf, 0x5dfc, 0x5e28, 0x5e55, 0x5e82, 0x5eaf, 0x5edc, 0x5f0c, 0x5f3c, 0x5f6c, 0x5f9c, 0x5fcc, 0x5ffc, 0x602c, 0x605c, 0x608c, 0x60bc, 0x60ec, 0x611c, 0x614c, 0x617c, 0x61ac, 0x61dc, 0x620c, 0x623c, 0x626c, 0x629c, 0x62c8]
 
-# Hardcoded expected byte that the binary is expecting for each char after the scramble
+# Hardcoded bytes that the binary is expecting for each char after the scramble
 expected_byte = [0xe6, 0x1f, 0xf9, 0x74, 0x22, 0x68, 0xf9, 0xc7, 0x8d, 0x22, 0x7b, 0x3a, 0xae, 0x48, 0x31, 0xcb, 0xcb, 0x22, 0x46, 0x5, 0xce, 0x3e, 0xcd, 0x2b, 0x12, 0x20, 0x7b, 0x50, 0x83, 0xb8, 0xcf, 0x7b]
 
 # List of internal registers that holds the result of the scramble for each char
 reg_to_check = ['bl', 'bl', 'sil', 'sil', 'sil', 'cl', 'al', 'al', 'al', 'al', 'al', 'al', 'al', 'al', 'al', 'al', 'al', 'al', 'al', 'al', 'al', 'al', 'al', 'al', 'al', 'al', 'al', 'al', 'al', 'al', 'al', 'al']
 
 
-# Get base address so we can add breakpoints
+# Get base address so we can add breakpoints at each offset
 def get_base_address():
     list_addr = r.cmdj('axtj fcn.000054e0')
     base_addr = list_addr[0]['from']                # get the 1st address that calls fcn.000054e0
