@@ -30,7 +30,7 @@ But later on we will find the check in the code.
 This binary is stripped. We can still find the `main()` function but there is nothing interesting there.
 And the entire code is quite well obfuscated (at least for my level of experience!).
 
-For this reason I won't go into too many details on how I got to each detail since I myself was lost for so long.
+For this reason I won't go into too many details since I myself was lost for so long.
 
 > A very long disassembly of this entire analysis is available at [assembly.md](assembly.md).
 
@@ -145,8 +145,8 @@ I won't paste the entire code here but the most important part is this:
 
 We can see the function `FUN_001054e0()` is called 4 times. And the second parameter is always the same `&local_128`, while the third parameter is a number incrementing from `0` to `3`.
 
-The interesting part is that the first time this function is called, `local_128` contains the password we typed!
-After returning from the first call, `local_128` will have a messy sequence of bytes.
+The interesting thing is that the first time this function is called, `local_128` contains the password we typed!
+After returning from the call, `local_128` will have a "random" sequence of bytes.
 And after that `FUN_001054e0()` is called 3 more times, to scramble even more our password.
 
 I'm not a cryptography expert, so I can't recognize what this function is doing.
