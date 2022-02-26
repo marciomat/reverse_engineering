@@ -196,9 +196,7 @@ It means I can execute the binary, and have access to all it's internal register
 The main idea of the script is to first run the binary with a dummy password:
 `picoCTF{ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ}`
 
-We know already that this password will pass through the basic checks.
-
-But it will fail at the very first check in the `if` statement we saw in the Ghidra code.
+It will fail at the very first check in the `if` statement we saw in the Ghidra code.
 Since it looks like each line of the `if` statement is checking one character of the password, it means we can probably crack the password one character at a time!
 
 The first problem: We don't know which character of the password each line is checking since it's all scrambled.
