@@ -187,12 +187,11 @@ But before moving forward, there are 2 more things to notice in the code above:
 
 ## Time for Python!
 
-If my approach isn't by reverse-engineering `FUN_001054e0()`, I can try to brute-force through the checks?
+If my approach isn't by reverse-engineering `FUN_001054e0()`, I can try to brute-force.
 
 This is a different brute-force technique (at least for me), since I can't easily replicate the contents of `FUN_001054e0()` inside my python script.
 So I decided to try something new and use `r2pipe`, which is describe as `The simplest and most effective way to script radare2`.
-
-You can check the code [here](hack_checkpass.py).
+It means I can execute the binary, and have access to all it's internal registers at runtime through radare2's debugger.
 
 The main idea of the script is to first run the binary with a dummy password:
 `picoCTF{ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ}`
@@ -202,15 +201,127 @@ We know already that this password will pass through the basic checks.
 But it will fail at the very first check in the `if` statement we saw in the Ghidra code.
 Since it looks like each line of the `if` statement is checking one character of the password, it means we can probably crack the password one character at a time!
 
-The first problem is: We don't know which character of the password each line is checking since it's all scrambled.
+The first problem: We don't know which character of the password each line is checking since it's all scrambled.
 I couldn't figure out an easy way to trace back the position of each character (another win for the obfuscation!) so I decided to let my python script figure it out.
 
 The principle is:
 
-1. I run the binary with my current dummy password
-2. Check what value my local var has (the one that is being checked). Remember, this local var is directly affected by one of the characters of our input password
-3. Store this value. For now it has no meaning
+1. Run the binary with a dummy password
+2. Store the value of the local var that is being checked. Remember, this local var is directly affected by one of the characters of our input password
 4. Replay the binary with another dummy password, but this time changing just the first character (from `Z` to `b` for ex)
-5. Compare the local var with the stored value. If they're the same, this is not the character this line of the `if` is checking
-6. If the value changed so we have a bingo!
+5. Compare the local var with the stored value.
+6. If they're the same, this is not the character that the binary is looking at. So go ahead and change the next character of the dummy password and repeat.
+7. If the value changed so we have a bingo!
 
+With this procedure we can determine which character the `if` statement is currently validating.
+Now it's time to brute-force this character and try every printable ASCII.
+
+Once we find the character that passes the validation, we update the dummy password with the right character in the right place.
+With this updated dummy password we repeat all over, starting with finding which character of the password is next to be brute-forced.
+
+At each iteration our dummy password becomes less and less dummy. Until, 32 iterations later, it's not dummy at all!
+
+Here is how the sequence looks like:
+
+```
+ZZZZZZZZZZZhZZZZZ_ZZZZZZZZZZZZZZ
+ZZZZZZZZZZZhZZZZZ_ZZZZZZ5ZOZZZZZ
+ZZZZZZZZZZZhZZZZZ_ZZeZZZ5ZOZ4ZZZ
+ZZZZZZZZZZZhZZZZZ_ZZeZ5Z5ZOZ4ZZq
+ZZZZZZZZZZZhZZZZZ_ZZeZ5Z5eOZ4Z6q
+ZZZZnZZZZZZhZZZ3Z_ZZeZ5Z5eOZ4Z6q
+ZZmZnZZZZZZhZZZ3l_ZZeZ5Z5eOZ4Z6q
+Z1mZnZZZZZZhZZZ3l_ZWeZ5Z5eOZ4Z6q
+Z1mZnZZ1ZeZhZZZ3l_ZWeZ5Z5eOZ4Z6q
+Z1mZnZS1ZeZhaZZ3l_ZWeZ5Z5eOZ4Z6q
+Z1mZnZS1ZeZhaZZ3l_NWeA5Z5eOZ4Z6q
+Z1minZS1ZeZhaZZ3l_NWeA5Z5eOZ4P6q
+t1minZS1ZeZhaZZ3l_NWeA525eOZ4P6q
+t1minZS1ZeChaZn3l_NWeA525eOZ4P6q
+t1mingS1ZeChaZn3l_NWeA525eOE4P6q
+```
+
+And the output of the script looks something like this:
+
+```
+$ ./hack_checkpass.py
+Searching char to crack:        
+--------------------
+ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+--------------------
+bZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+--------------------
+ZbZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+--------------------
+ZZbZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+--------------------
+ZZZbZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+--------------------
+ZZZZbZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+--------------------
+ZZZZZbZZZZZZZZZZZZZZZZZZZZZZZZZZ
+--------------------
+ZZZZZZbZZZZZZZZZZZZZZZZZZZZZZZZZ
+--------------------
+ZZZZZZZbZZZZZZZZZZZZZZZZZZZZZZZZ
+--------------------
+ZZZZZZZZbZZZZZZZZZZZZZZZZZZZZZZZ
+--------------------
+ZZZZZZZZZbZZZZZZZZZZZZZZZZZZZZZZ
+--------------------                                                                                                   
+ZZZZZZZZZZbZZZZZZZZZZZZZZZZZZZZZ
+--------------------
+ZZZZZZZZZZZbZZZZZZZZZZZZZZZZZZZZ
+Index of next char to crack:  11
+Burteforcing char...            
+--------------------
+ZZZZZZZZZZZ0ZZZZZZZZZZZZZZZZZZZZ
+--------------------
+ZZZZZZZZZZZ1ZZZZZZZZZZZZZZZZZZZZ
+--------------------
+ZZZZZZZZZZZ2ZZZZZZZZZZZZZZZZZZZZ
+--------------------
+ZZZZZZZZZZZ3ZZZZZZZZZZZZZZZZZZZZ    
+--------------------                                                                                                   
+ZZZZZZZZZZZ4ZZZZZZZZZZZZZZZZZZZZ 
+
+< SKIPPED SOME LINES>
+
+--------------------
+ZZZZZZZZZZZgZZZZZZZZZZZZZZZZZZZZ
+--------------------
+ZZZZZZZZZZZhZZZZZZZZZZZZZZZZZZZZ
+Cracked char! So far password is:  ZZZZZZZZZZZhZZZZZZZZZZZZZZZZZZZZ
+Searching char to crack:
+--------------------
+ZZZZZZZZZZZhZZZZZZZZZZZZZZZZZZZZ
+--------------------
+bZZZZZZZZZZhZZZZZZZZZZZZZZZZZZZZ
+--------------------
+ZbZZZZZZZZZhZZZZZZZZZZZZZZZZZZZZ
+--------------------
+ZZbZZZZZZZZhZZZZZZZZZZZZZZZZZZZZ
+
+< SKIPPED MANY... MANY... MANY LINES>
+
+--------------------                
+t1mingS1deChaln3l_NWeA525eOE4P6q
+--------------------                                                                                                   
+t1mingS1deChamn3l_NWeA525eOE4P6q
+--------------------                                                                                                   
+t1mingS1deChann3l_NWeA525eOE4P6q                                                                                   
+Cracked char! So far password is: t1mingS1deChann3l_NWeA525eOE4P6q
+
+
+Final Password: 
+t1mingS1deChann3l_NWeA525eOE4P6q
+```
+
+And the final test:
+
+```
+$ ./checkpass picoCTF{t1mingS1deChann3l_NWeA525eOE4P6q}
+Success
+```
+
+You can check the script [here](hack_checkpass.py).
