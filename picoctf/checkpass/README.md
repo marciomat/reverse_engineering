@@ -202,7 +202,7 @@ But it will fail at the very first check in the `if` statement we saw in the Ghi
 Since it looks like each line of the `if` statement is checking one character of the password, it means we can probably crack the password one character at a time!
 
 The first problem: We don't know which character of the password each line is checking since it's all scrambled.
-I couldn't figure out an easy way to trace back the position of each character (another win for the obfuscation!) so I decided to let my python script figure it out.
+I couldn't figure out an easy way to trace back the position of each character (another win for the obfuscation!) so I decided to let the python script figure it out.
 
 The principle is:
 
@@ -217,9 +217,10 @@ With this procedure we can determine which character the `if` statement is curre
 Now it's time to brute-force this character and try every printable ASCII.
 
 Once we find the character that passes the validation, we update the dummy password with the right character in the right place.
-With this updated dummy password we repeat all over, starting with finding which character of the password is next to be brute-forced.
 
-At each iteration our dummy password becomes less and less dummy. Until, 32 iterations later, it's not dummy at all!
+With this updated dummy password we repeat the process all over again.
+
+At each iteration our dummy password becomes less and less dummy. Until, 32 iterations later, it's not dummy anymore!
 
 Here is how the sequence looks like:
 
@@ -317,7 +318,7 @@ Final Password:
 t1mingS1deChann3l_NWeA525eOE4P6q
 ```
 
-And the final test:
+And the more important test:
 
 ```
 $ ./checkpass picoCTF{t1mingS1deChann3l_NWeA525eOE4P6q}
