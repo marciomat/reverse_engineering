@@ -186,17 +186,17 @@ But before moving forward, there are 2 more things to notice in the code above:
 
 ## Time for Python!
 
-If my approach isn't by reverse-engineering `FUN_001054e0()`, I can try to brute-force.
+Since I won't be reverse-engineering `FUN_001054e0()`, I can try to brute-force the password.
+But this is a different brute-force technique.
 
-This is a different brute-force technique (at least for me), since I can't easily replicate the contents of `FUN_001054e0()` inside my python script.
-So I decided to try something new and use `r2pipe`, which is describe as `The simplest and most effective way to script radare2`.
-It means I can execute the binary, and have access to all it's internal registers at runtime through radare2's debugger.
+I decided to try something new and use `r2pipe`, which is describe as `The simplest and most effective way to script radare2`.
+This means I can execute the binary, and have access to all it's internal registers at runtime through radare2's debugger.
 
 The main idea of the script is to first run the binary with a dummy password:
 `picoCTF{ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ}`
 
 It will fail at the very first check in the `if` statement we saw in the Ghidra code.
-Since it looks like each line of the `if` statement is checking one character of the password, it means we can probably crack the password one character at a time!
+Since it looks like each line of the `if` statement is checking one character of the password, we can probably crack the password one character at a time!
 
 The first problem: We don't know which character of the password each line is checking since it's all scrambled.
 I couldn't figure out an easy way to trace back the position of each character (another win for the obfuscation!) so I decided to let the python script figure it out.
