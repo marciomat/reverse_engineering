@@ -31,7 +31,7 @@ And the entire code is quite well obfuscated (at least for my level of experienc
 
 For this reason I won't go into too many details since I myself was lost for so long.
 
-> A very long disassembly of this entire analysis is available at [assembly.md](assembly.md).
+> A very long disassembly of this entire analysis is available at [assembly.md](https://github.com/marciomat/reverse_engineering/blob/main/picoctf/checkpass/assembly.md).
 
 ## Initial checks
 
