@@ -6,8 +6,8 @@ Input:
 - [checkpass](checkpass) - Original binary to crack
 
 Output:
-- [hack_checkpass.py](hack_checkpass.py) - Python script used to crack the password
-- [assembly.md](assembly.md) - Full disassembly of the main part of the code
+- [hack_checkpass.py](https://github.com/marciomat/reverse_engineering/blob/main/picoctf/checkpass/hack_checkpass.py) - Python script used to crack the password
+- [assembly.md](https://github.com/marciomat/reverse_engineering/blob/main/picoctf/checkpass/assembly.md) - Full disassembly of the main part of the code
 
 # The challenge
 
@@ -322,4 +322,4 @@ $ ./checkpass picoCTF{t1mingS1deChann3l_NWeA525eOE4P6q}
 Success
 ```
 
-You can check the script [here](hack_checkpass.py).
+You can check the script [here](https://github.com/marciomat/reverse_engineering/blob/main/picoctf/checkpass/hack_checkpass.py).
