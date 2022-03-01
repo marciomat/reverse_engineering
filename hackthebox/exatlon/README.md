@@ -6,8 +6,8 @@ Input:
 - [exatlon_v1](exatlon_v1) - Binary to crack
 
 Output:
-- [python script](crack_passw.py) - Python script to decrypt the password
-- [disassembly.md](disassembly.md) - Full disassembly of the `main()` function (with renamed local variables for clarity)
+- [python script](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/exatlon/crack_passw.py) - Python script to decrypt the password
+- [disassembly.md](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/exatlon/disassembly.md) - Full disassembly of the `main()` function (with renamed local variables for clarity)
 
 # The challenge
 
@@ -177,4 +177,4 @@ And we can also grab the encrypted flag that we have already found:
 encrpt_pass = [1152, 1344, 1056, 1968, 1728, 816, 1648, 784, 1584, 816, 1728, 1520, 1840, 1664, 784, 1632, 1856, 1520, 1728, 816, 1632, 1856, 1520, 784, 1760, 1840, 1824, 816, 1584, 1856, 784, 1776, 1760, 528, 528, 2000]
 ```
 
-Using this data structures we can create a simple [python script](crack_passw.py) to decode our flag!
+Using this data structures we can create a simple [python script](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/exatlon/crack_passw.py) to decode our flag!

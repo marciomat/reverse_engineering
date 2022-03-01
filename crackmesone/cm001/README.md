@@ -7,9 +7,9 @@ Input:
 - [patched_cm001](patched_cm001) - Patched binary
 
 Output:
-- [decode_pass.py](decode_pass.py) - Python script to decrypt the password
-- [main.md](main.md) - Full disassembly of the `main()` function
-- [fcn_0040152b.md](fcn_0040152b.md) - Full disassembly of the function `fcn.0040152b`
+- [decode_pass.py](https://github.com/marciomat/reverse_engineering/blob/main/crackmesone/cm001/decode_pass.py) - Python script to decrypt the password
+- [main.md](https://github.com/marciomat/reverse_engineering/blob/main/crackmesone/cm001/main.md) - Full disassembly of the `main()` function
+- [fcn_0040152b.md](https://github.com/marciomat/reverse_engineering/blob/main/crackmesone/cm001/fcn_0040152b.md) - Full disassembly of the function `fcn.0040152b`
 
 # The challenge
 
@@ -362,7 +362,7 @@ And it performs a very basic hash with the characters. This part was possible to
 As I had mentioned before, the stage 1 and stage 2 perform a very intensive loop over each character from `xmm0` and `xmm1` so it would take a script to basically brute-force to find a sequence of ASCII that would pass those validations.
 
 I created this ugly but functional python script to find me the first half of the password:
-[decode_pass.py](decode_pass.py)
+[decode_pass.py](https://github.com/marciomat/reverse_engineering/blob/main/crackmesone/cm001/decode_pass.py)
 
 This script found this weird sequence of 64 characters:
 

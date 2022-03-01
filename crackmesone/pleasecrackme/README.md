@@ -8,7 +8,7 @@ Input:
 - [PleaseCrackMe](PleaseCrackMe) - Binary to crack
 
 Output:
-- [disassembly.md](disassembly.md) - Full disassembly of `main()` function
+- [disassembly.md](https://github.com/marciomat/reverse_engineering/tree/main/crackmesone/pleasecrackme/disassembly.md) - Full disassembly of `main()` function
 
 
 # The challenge

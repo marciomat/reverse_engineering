@@ -7,7 +7,7 @@ Input:
 - [patched_BombsLanded](patched_BombsLanded) - Patched binary
 
 Output:
-- [main.md](main.md) - Full disassembly of the `main()` function
+- [main.md](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/bombsLanded/main.md) - Full disassembly of the `main()` function
 
 # The challenge
 

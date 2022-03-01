@@ -8,8 +8,8 @@ Input:
 - [crackme](crackme) - Binary to crack
 
 Output:
-- [script_crack.py](script_crack.py) - Script created to find the answer
-- [disassembly.md](disassembly.md) - Full disassembly of `main()` function
+- [script_crack.py](https://github.com/marciomat/reverse_engineering/blob/main/crackmesone/4N0NY31TY/script_crack.py) - Script created to find the answer
+- [disassembly.md](https://github.com/marciomat/reverse_engineering/blob/main/crackmesone/4N0NY31TY/disassembly.md) - Full disassembly of `main()` function
 
 # The challenge
 
@@ -96,7 +96,7 @@ If the comparison is equal we got a valid license, otherwise it's invalid.
 
 Now this is a typical case where a script is the best way to find the correct string. And it's safe to assume that there are multiple answers that would be accepted by the validation check.
 
-The [script](script_crack.py) is very simple.
+The [script](https://github.com/marciomat/reverse_engineering/blob/main/crackmesone/4N0NY31TY/script_crack.py) is very simple.
 
 And by running it, we found the following string as one of the possible answers:
 

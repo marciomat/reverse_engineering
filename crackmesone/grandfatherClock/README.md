@@ -6,8 +6,8 @@ Input:
 - [grandfather_clock](grandfather_clock) - Binary to crack
 
 Output:
-- [decode_pass.py](decode_pass.py) - Python script to decrypt the password
-- [disassembly.md](disassembly.md) - Full disassembly of the `main()` function (with renamed local variables for clarity)
+- [decode_pass.py](https://github.com/marciomat/reverse_engineering/tree/main/crackmesone/grandfatherClock/decode_pass.py) - Python script to decrypt the password
+- [disassembly.md](https://github.com/marciomat/reverse_engineering/tree/main/crackmesone/grandfatherClock/disassembly.md) - Full disassembly of the `main()` function (with renamed local variables for clarity)
 
 # The challenge
 
@@ -174,4 +174,4 @@ Now we have all the information we need to be able to decode our flag.
 
 We know what is our encoded flag and we know how to unscramble it.
 
-I created this quick [python script](./decode_pass.py) which is quite easy to understand and _voila_! It worked!
+I created this quick [python script](https://github.com/marciomat/reverse_engineering/tree/main/crackmesone/grandfatherClock/decode_pass.py) which is quite easy to understand and _voila_! It worked!
