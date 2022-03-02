@@ -189,7 +189,7 @@ But before moving forward, there are 2 more things to notice in the code above:
 Since I won't be reverse-engineering `FUN_001054e0()`, I can try to brute-force the password.
 But this is a different brute-force technique.
 
-I decided to try something new and use `r2pipe`, which is describe as `The simplest and most effective way to script radare2`.
+I decided to try something new and use `r2pipe`, which is described as `The simplest and most effective way to script radare2`.
 This means I can execute the binary, and have access to all it's internal registers at runtime through radare2's debugger.
 
 The main idea of the script is to first run the binary with a dummy password:
