@@ -6,8 +6,8 @@ Input:
 - [pneumaticvalidator](pneumaticvalidator) - Original binary to crack
 
 Output:
-- [func_simulation.c](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/pneumaticValidator/func_simulation.md)
 - [crack_passw.py](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/pneumaticValidator/crack_passw.py) - Python script to decrypt the password
+- [func_simulation.c](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/pneumaticValidator/func_simulation.md) - Decompilation of the `simulation()` function
 
 # The challenge
 
@@ -33,7 +33,7 @@ Wrong \o\
 
 # Solution
 
-This challenge is quite hard. It has a very long and complex validation flow.
+This challenge is quite hard. It has a *very* long and complex validation flow.
 
 I spent few days looking at the assembly code, in radare2.
 But after a while it was clear that I'd need a code with a higher level of abstraction, so I went with Ghidra instead.
@@ -85,4 +85,41 @@ undefined8 main(int argc,long argv)
 ```
 
 > Note: functions were renamed by me, for clarity
+
+So far it doesn't look that bad. The problem is when we open the function `simulation()` to try to understand what's going on in there.
+
+Here's just the first few lines, to get an idea of the size of the trouble we are in:
+
+```C
+void simulation(void)
+
+{
+  float fVar1;
+  
+  if (passw_vector_data_0x14x0x7[0][6] == 0) {
+    fVar1 = 0.0;
+  }
+  else {
+    fVar1 = 100.0;
+  }
+  f_vector_sim_0x8000_0x80x0x40[0x9b] = fVar1 + f_vector_sim_0x8000_0x80x0x40[0x9b];
+  if (passw_vector_data_0x14x0x7[8][6] == 0) {
+    fVar1 = 0.0;
+  }
+  else {
+    fVar1 = 100.0;
+  }
+  f_vector_sim_0x8000_0x80x0x40[0xf9c] = fVar1 + f_vector_sim_0x8000_0x80x0x40[0xf9c];
+  f_vector_sim_0x8000_0x80x0x40[0x1439] = f_vector_sim_0x8000_0x80x0x40[0x1439] + 100.0;
+  if (passw_vector_data_0x14x0x7[11][6] == 0) {
+    fVar1 = 0.0;
+  }
+  else {
+    fVar1 = 100.0;
+  }
+  f_vector_sim_0x8000_0x80x0x40[0xfe1] = fVar1 + f_vector_sim_0x8000_0x80x0x40[0xfe1];
+  f_vector_sim_0x8000_0x80x0x40[0x532] = f_vector_sim_0x8000_0x80x0x40[0x532] + 100.0;
+```
+
+> The entire function is [here](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/pneumaticValidator/func_simulation.md).
 
