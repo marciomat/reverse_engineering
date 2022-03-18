@@ -3,7 +3,7 @@
 Documenting my thought process for the RE challenges that I've worked on.
 My goal is to get more experience reverse engineering binaries using tools like [Radare2](https://rada.re/) and [Ghidra](https://ghidra-sre.org/).
 
-I've been using platforms like [HackTheBox](https://www.hackthebox.com/) and [Crackmes.one](https://crackmes.one) to hack the flags and passwords.
+I've been using platforms like [HackTheBox](https://www.hackthebox.com/), [PicoCTF](https://picoctf.org/) and [Crackmes.one](https://crackmes.one) to hack the flags and passwords.
 Some challenges involve creating a python script for brute-forcing the password, and other challenges are purely based on reading the assembly code.
 
 > This content is better visualized in static page format but can also be viewed in github:
@@ -16,6 +16,7 @@ Some challenges involve creating a python script for brute-forcing the password,
 
 - [exatlon_v1](./hackthebox/exatlon)
 - [BombsLanded](./hackthebox/bombsLanded)
+- [pneumaticValidator](./hackthebox/pneumaticValidator)
 
 <br/>
 
