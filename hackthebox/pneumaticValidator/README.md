@@ -6,7 +6,7 @@ Input:
 - [pneumaticvalidator](pneumaticvalidator) - Original binary to crack
 
 Output:
-- [func_simulation.c](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/pneumaticValidator/func_simulation.c)
+- [func_simulation.c](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/pneumaticValidator/func_simulation.md)
 - [crack_passw.py](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/pneumaticValidator/crack_passw.py) - Python script to decrypt the password
 
 # The challenge
