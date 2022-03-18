@@ -40,6 +40,8 @@ But after a while it was clear that I'd need a code with a higher level of abstr
 
 Here is the `main()` function, decompiled by Ghidra:
 
+> Note: functions were renamed by me, for clarity
+
 ```C
 undefined8 main(int argc,long argv)
 {
@@ -84,8 +86,6 @@ undefined8 main(int argc,long argv)
 }
 ```
 
-> Note: functions were renamed by me, for clarity
-
 So far it doesn't look that bad. The problem is when we open the function `simulation()` to try to understand what's going on in there.
 
 Here's just the first few lines, to get an idea of the size of the trouble we are in:
@@ -123,3 +123,8 @@ void simulation(void)
 
 > The entire function is [here](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/pneumaticValidator/func_simulation.md).
 
+And to make it even worse, this function `simulation()` is executed 1024 times!
+
+## Two steps forward, two steps back
+
+I spent most of my time renaming functions, re-assigning variable types (so Ghidra shows the right array format) and trying to have a better picture of how the validation works.
