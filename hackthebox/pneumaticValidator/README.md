@@ -125,6 +125,6 @@ void simulation(void)
 
 And to make it even worse, this function `simulation()` is executed 1024 times!
 
-## Two steps forward, two steps back
+## Two steps forward, one and a half steps back
 
 I spent most of my time renaming functions, re-assigning variable types (so Ghidra shows the right array format) and trying to have a better picture of how the validation works.
