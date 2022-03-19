@@ -5,15 +5,6 @@ import r2pipe
 import struct
 
 #passw = "00000000000000000000"
-#passw = "HT000000000000000000"
-#passw = "HTB{0000000000000000"
-#passw = "HTB{P000000000000000"
-#passw = "HTB{PN00000000000000"
-#passw = "HTB{PN?0000000000000"
-#passw = "HTB{PN?U000000000000"
-#passw = "HTB{PN?Um00000000000"
-#passw = "HTB{PN?Um40000000000"
-#passw = "HTB{PN?Um4t1C_000000"
 #passw = "HTB{PN?Um4t1C_l0g1C}"
 #passw = "HTB{PN3Um4t1C_l0g1C}"
 passw = "HTB{pN3Um4t1C_l0g1C}"
