@@ -12,7 +12,7 @@ Output:
 # The challenge
 
 When we run the binary, it asks for the password to be passed as an argument.
-And the first thing it does is validate the legnth:
+And the first thing it does is validate the length:
 
 ```
 $ ./pneumaticvalidator myPasswordAttempt   
@@ -88,7 +88,7 @@ undefined8 main(int argc,long argv)
 
 So far it doesn't look that bad. The problem is when we open the function `simulation()` to try to understand what's going on in there.
 
-Here's just the first few lines, to get an idea of the size of the trouble we are in:
+Here's just the first few lines. The pattern repeats throughout the function:
 
 ```C
 void simulation(void)
@@ -123,8 +123,47 @@ void simulation(void)
 
 > The entire function is [here](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/pneumaticValidator/func_simulation.md).
 
-And to make it even worse, this function `simulation()` is executed 1024 times!
+And to make it more complicated, this function `simulation()` is executed 1024 times!
 
-## Two steps forward, one and a half steps back
+## Black-box attempt
 
 I spent most of my time renaming functions, re-assigning variable types (so Ghidra shows the right array format) and trying to have a better picture of how the validation works.
+
+In the end it was clear that I had no chance to understand the entire validation flow.
+
+Another approach for this kind of problem is to consider the entire validation as a black-box.
+We just look at the inputs and outputs, and try to keep track of how the former affects the latter.
+
+There are a few qualities of the validation method that makes it harder or easier to use this technique:
+
+- Control over all inputs: If there is any input that we can't control (e.g. if time of the day is used to scramble the data) it will make it much harder
+
+- Validation of inputs made independently: An example of inputs validated independently is if the binary looks for a letter 'A' in position 1. On another hand, the binary may take the entire input string, calculate the SHA-256 and compare with the expected result. This would make it much harder
+
+- How fast is the validation: If the validation of the password takes 3h, it would be a very long process to attempt a try-and-error approach, possibly making it impossible
+
+So how this binary fits in this analysis?
+
+- We have control over all inputs. By looking at the binary we can be sure it only cares about the password.
+- The characters of the password are *not* validated independently. So this will make the process a bit harder.
+- The validation takes about 4 seconds each run. Not bad but it will take quite a while to brute-force all 20 characters.
+
+## Ready or not, here I come!
+
+Even though the input characters are not validated independently, there is one thing that will help us make sure we're heading in the right diretion.
+
+Let's look again at the final check in the `main()` function:
+
+```C
+      puts("Simulating...");
+      for (i = 0; i < 1024; i = i + 1) {
+        simulation();
+      }
+      fVar3 = get_max_f_vector_sim();
+      if (15.0 <= fVar3) {
+        puts("Wrong \\o\\");
+      }
+      else {
+        puts("Correct /o/");
+      }
+```
