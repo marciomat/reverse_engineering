@@ -179,7 +179,7 @@ The idea of the script can be summarized as:
 1. Start with a dummy password with 20 characters
 2. For each position of the string, iterate over all possible ASCII characters
 3. Find which character returned the lowest value in `fVar3`
-4. Save each character found for each position and update the dummy password for the next iteration on the next string position
+4. Save the best character found for each position and update the dummy password for the next iteration
 
 > The script can be found [here](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/pneumaticValidator/crack_passw.py).
 
