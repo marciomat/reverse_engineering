@@ -88,7 +88,7 @@ undefined8 main(int argc,long argv)
 
 So far it doesn't look that bad. The problem is when we open the function `simulation()` to try to understand what's going on in there.
 
-Here's just the first few lines. The pattern repeats throughout the function:
+Here are just the first few lines. The pattern repeats throughout the function:
 
 ```C
 void simulation(void)
@@ -138,7 +138,7 @@ There are a few qualities of the validation method that makes it harder or easie
 
 - Control over all inputs: If there is any input that we can't control (e.g. if time of the day is used to scramble the data) it will make it much harder
 
-- Validation of inputs made independently: An example of inputs validated independently is if the binary looks for a letter 'A' in position 1. On another hand, the binary may take the entire input string, calculate the SHA-256 and compare with the expected result. This would make it much harder
+- Validation of inputs made independently: An example of inputs validated independently is if the binary looks for a letter 'A' in position 1. On another hand, the binary may take the entire input string, calculate the SHA-256 and compare with the expected result
 
 - How fast is the validation: If the validation of the password takes 3h, it would be a very long process to attempt a try-and-error approach, possibly making it impossible
 
@@ -167,3 +167,57 @@ Let's look again at the final check in the `main()` function:
         puts("Correct /o/");
       }
 ```
+
+After the `simulation()` is executed 1024 times, it calls the `get_max_f_vector_sim()`, which returns the maximum value from a series of 4 internal variables.
+If this maximum value is above 15.0 we have the wrong password, otherwise we got it.
+
+So it's pretty clear that we have to minimize the value returned by `get_max_f_vector_sim()` in `fVar3`.
+
+I created a python script, using `r2pipe` to fetch this internal data for each run.
+The idea of the script can be summarized as:
+
+1. Start with a dummy password with 20 characters
+2. For each position of the string, iterate over all possible ASCII characters
+3. Find which character returned the lowest value in `fVar3`
+4. Save each character found for each position and update the dummy password on the fly
+
+The script can be found [here](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/pneumaticValidator/crack_passw.py).
+
+But, since the characters are not validated indepedently, one pass of this loop won't necessarily find the right password.
+
+This is where I decided not to fully automate the script since it would take forever for it to run many times over all characters.
+
+And just by looking at the password after the first pass, we can be sure that some of the characters are the right ones.
+So we don't need to re-run the script on every single character.
+
+To explain what I mean, this is the sequence of passwords that the script found during the first pass:
+
+```
+00000000000000000000
+HT000000000000000000
+HTB{000000000000000}
+HTB{P00000000000000}
+HTB{PN0000000000000}
+HTB{PN?000000000000}
+HTB{PN?U00000000000}
+HTB{PN?Um0000000000}
+HTB{PN?Um4000000000}
+HTB{PN?Um4t1C_00000}
+HTB{PN?Um4t1C_l0g1C}
+```
+
+We can clearly see that it's pretty close, even though the password is still not the right one.
+At the same time, we can tell for sure that the first 4 characters are correct, since it matches the expected pattern for HackTheBox flags.
+
+Now the approach is to identify which characters look a bit off and re-run the script only for those characters to see if it will find a better solution (i.e. a lower `fVar3` value).
+
+After few more tries I got this next two results:
+
+```
+HTB{PN3Um4t1C_l0g1C}
+HTB{pN3Um4t1C_l0g1C}
+```
+
+The last one returned an `fVar3` of 11.93.
+
+Mission accomplished!
