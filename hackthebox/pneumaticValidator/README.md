@@ -179,9 +179,9 @@ The idea of the script can be summarized as:
 1. Start with a dummy password with 20 characters
 2. For each position of the string, iterate over all possible ASCII characters
 3. Find which character returned the lowest value in `fVar3`
-4. Save each character found for each position and update the dummy password on the fly
+4. Save each character found for each position and update the dummy password for the next iteration on the next string position
 
-The script can be found [here](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/pneumaticValidator/crack_passw.py).
+> The script can be found [here](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/pneumaticValidator/crack_passw.py).
 
 But, since the characters are not validated indepedently, one pass of this loop won't necessarily find the right password.
 
@@ -195,14 +195,14 @@ To explain what I mean, this is the sequence of passwords that the script found 
 ```
 00000000000000000000
 HT000000000000000000
-HTB{000000000000000}
-HTB{P00000000000000}
-HTB{PN0000000000000}
-HTB{PN?000000000000}
-HTB{PN?U00000000000}
-HTB{PN?Um0000000000}
-HTB{PN?Um4000000000}
-HTB{PN?Um4t1C_00000}
+HTB{0000000000000000
+HTB{P000000000000000
+HTB{PN00000000000000
+HTB{PN?0000000000000
+HTB{PN?U000000000000
+HTB{PN?Um00000000000
+HTB{PN?Um40000000000
+HTB{PN?Um4t1C_000000
 HTB{PN?Um4t1C_l0g1C}
 ```
 
