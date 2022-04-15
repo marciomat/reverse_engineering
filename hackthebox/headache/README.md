@@ -63,7 +63,7 @@ As we can see, this jump is skipping the `call main` and, instead, it calls `fcn
             0x0000135e      c3             ret
 ```
 
-And of course this `fcn.000013c1` looks just like a `main()` function. Meaning, it executes the same instructions to print the same messages we see on the screen when we run the binary.
+And of course this `fcn.000013c1` looks just like a `main()` function. Meaning, it executes the instructions to print the same messages we see on the screen when we run the binary.
 
 And there is, in fact, a flag hidden there! But it's a fake flag...
 
@@ -73,4 +73,78 @@ There are many options here. We can simply swap from `jne` to `je` or replace th
 I used the latter approach and saved the new binary as `patched_headache`. This is the binary I'll be using from here on.
 
 ## Real main() function, but encrypted!
+
+With the patched binary we can access the real `main()` function while debugging it.
+
+But when we look at it, this is what we see:
+
+```assembly
+ 53: int main (uint32_t argc, char **argv, int64_t arg4);
+│       ╎   ; arg uint32_t argc @ rdi
+│       ╎   ; arg char **argv @ rsi
+│       ╎   ; arg int64_t arg4 @ rcx
+│      ┌──> 0x00001faf      3479           xor al, 0x79
+│      ╎╎   0x00001fb1      bc842ae4d5     mov esp, 0xd5e42a84
+│     ┌───< 0x00001fb6      e063           loopne 0x201b
+│     │╎╎   0x00001fb8      3131           xor dword [rcx], esi        ; arg4
+│     │╎╎   0x00001fba      bbd90cc6cc     mov ebx, 0xccc60cd9
+│     │╎╎   0x00001fbf      c9             leave
+│     │└──< 0x00001fc0      71ed           jno main
+```
+
+These instructions seem very random and don't make sense. Plus, we can't see any instruction to print the messages we expect to see on the screen.
+So there is something else going on.
+
+If we run the binary and set a breakpoint right before we enter `main()`, this is what we see:
+
+```assembly
+┌ 53: int main (int argc, char **argv, char **envp);
+│           ; arg uint32_t argc @ rdi
+│           ; arg char **argv @ rsi
+│           ; arg int64_t arg4 @ rcx
+│           0x55e05d0c5faf      55             push rbp
+│           0x55e05d0c5fb0      4889e5         mov rbp, rsp
+│           0x55e05d0c5fb3  ~   4881ecd00000.  sub rsp, 0xd0
+│           0x55e05d0c5fb8      0000           add byte [rax], al      ; arg4
+│           0x55e05d0c5fba      89bd3cffffff   mov dword [rbp - 0xc4], edi
+│           0x55e05d0c5fc0  ~   4889b530ffff.  mov qword [rbp - 0xd0], rsi
+│           0x55e05d0c5fc2      b530           mov ch, 0x30            ; '0' ; 48 ; argv
+```
+
+The instructions changed. It looks like they're re-written at runtime.
+
+## The transformation of main()
+
+By analyzing the code and running some experiments we can quickly find the function responsible for decoding `main()`.
+The function is called `fcn.00001e33`. And it's called right before `main()`:
+
+```assembly
+            0x55e05d0c5324      4889c7         mov rdi, rax
+            0x55e05d0c5327      e8a4fdffff     call sym.imp.fflush     ;[3] ; int fflush(FILE *stream)
+            0x55e05d0c532c      488d35511300.  lea rsi, [0x55e05d0c6684]
+            0x55e05d0c5333      488d3d750c00.  lea rdi, [main]         ; 0x55e05d0c5faf
+            0x55e05d0c533a      e8f40a0000     call fcn.00001e33       ;[4]
+            0x55e05d0c533f      488b55f0       mov rdx, qword [rbp - 0x10]
+            0x55e05d0c5343      8b45fc         mov eax, dword [rbp - 4]
+            0x55e05d0c5346      4889d6         mov rsi, rdx
+            0x55e05d0c5349      89c7           mov edi, eax
+            0x55e05d0c534b      e85f0c0000     call main
+```
+
+We can take a deep look into this function but at the end of the day, this function does exactly what we expect. It decodes the data from `main()`.
+
+It uses a string of hardcoded bytes and perform a `xor` operation between these bytes and the hex data that is already in the `main()`.
+The hardcoded bytes are:
+
+```
+:> px 32 @ 0x55e05d0c7008
+- offset -       0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF
+0x55e05d0c7008  6131 3561 6265 3930 6331 3132 6430 3933  a15abe90c112d093
+0x55e05d0c7018  3639 6439 6639 6461 3961 3863 3034 3665  69d9f9da9a8c046e
+```
+
+Most importantly, it always decode `main()` function the same way, whether a debugger is being used or not.
+So there is not much to fight with this decoder. We just execute the binary and let it work its magic before we analyze the instructions from `main()`.
+
+## More fake flags
 
