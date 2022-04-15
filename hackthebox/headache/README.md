@@ -156,9 +156,68 @@ We can maually decode the data. For example in the table below we have the bytes
 | `0x34` | `0x61` | `0x34 xor 0x61 == 0x55` |
 | `0x79` | `0x31` | `0x79 xor 0x31 == 0x48` |
 
+If you look back at the `main()` function, these are exactly the bytes found.
 
 But most importantly, it always decode `main()` function the same way, whether a debugger is being used or not.
 So there is not much to fight with this decoder. We just execute the binary and let it work its magic before we analyze the instructions from `main()`.
 
-## More fake flags
+## Close, but no cigar
+
+We made a lot of progress so far!
+Let's examine the real `main()` function after it gets decoded.
+
+Few lines down the road we can see the following instructions:
+
+```assembly
+            0x55e05d0c6089      c645a048       mov byte [rbp - 0x60], 0x48    ; 'H' ; 72
+            0x55e05d0c608d      c645a154       mov byte [rbp - 0x5f], 0x54    ; 'T' ; 84
+            0x55e05d0c6091      c645a242       mov byte [rbp - 0x5e], 0x42    ; 'B' ; 66
+            0x55e05d0c6095      c645a37b       mov byte [rbp - 0x5d], 0x7b    ; '{' ; 123
+            0x55e05d0c6099      c645a477       mov byte [rbp - 0x5c], 0x77    ; 'w' ; 119
+            0x55e05d0c609d      c645a530       mov byte [rbp - 0x5b], 0x30    ; '0' ; 48
+            0x55e05d0c60a1      c645a677       mov byte [rbp - 0x5a], 0x77    ; 'w' ; 119
+            0x55e05d0c60a5      c645a75f       mov byte [rbp - 0x59], 0x5f    ; '_' ; 95
+            0x55e05d0c60a9      c645a874       mov byte [rbp - 0x58], 0x74    ; 't' ; 116
+            0x55e05d0c60ad      c645a968       mov byte [rbp - 0x57], 0x68    ; 'h' ; 104
+            0x55e05d0c60b1      c645aa34       mov byte [rbp - 0x56], 0x34    ; '4' ; 52
+            0x55e05d0c60bd      c645ad5f       mov byte [rbp - 0x53], 0x5f    ; '_' ; 95
+            0x55e05d0c60c1      c645ae63       mov byte [rbp - 0x52], 0x63    ; 'c' ; 99
+            0x55e05d0c60c5      c645af30       mov byte [rbp - 0x51], 0x30    ; '0' ; 48
+            0x55e05d0c60c9      c645b030       mov byte [rbp - 0x50], 0x30    ; '0' ; 48
+            0x55e05d0c60cd      c645b130       mov byte [rbp - 0x4f], 0x30    ; '0' ; 48
+            0x55e05d0c60d1      c645b26c       mov byte [rbp - 0x4e], 0x6c    ; 'l' ; 108
+            0x55e05d0c60d5      c645b37d       mov byte [rbp - 0x4d], 0x7d    ; '}' ; 125
+            0x55e05d0c60d9      488d45c0       lea rax, [rbp - 0x40]
+            0x55e05d0c60dd      4889c7         mov rdi, rax
+            0x55e05d0c60e0      e87befffff     call sym.imp.strlen
+```
+
+Looks like the flag! But... of course it's a fake flag. We are still not out of the woods.
+
+## How many more traps?
+
+Clearly there is another call to `ptrace` somewhere else. And this is causing the debugger to execute a different code compared to when we just run the binary from the command-line.
+
+Like I mentioned before, part of the instructions are still obfuscated, so I can't see the `ptrace` call. But even if I could see it, I wouldn't be able to easily patch it, because `main()` is encoded.
+It wouldn't be impossible to patch since we know how the decoding algorithm works. But let's take an easier approach.
+
+---
+
+We know the messages it prints on the screen, so we can find their address and search for the references.
+
+Let's look at the references to "Login success!":
+
+```
+:> axt @ 0x55e05d0c7056
+fcn.000013c1 0x55e05d0c54c4 [DATA] lea rdi, [0x55e05d0c7056]
+fcn.000013c1 0x55e05d0c550c [DATA] lea rdi, [0x55e05d0c7056]
+fcn.000013c1 0x55e05d0c552c [DATA] lea rdi, [0x55e05d0c7056]
+(nofunc) 0x55e05d0c61b5 [DATA] lea rdi, [0x55e05d0c7056]
+(nofunc) 0x55e05d0c666e [DATA] lea rdi, [0x55e05d0c7056]
+```
+
+The first 3 appearances are from the fake `main()` function that we are bypassing already.
+
+The last 2 are from the real `main()` function. The first one is for the fake flag, so the second one should be for the real flag?
+
 
