@@ -35,7 +35,7 @@ This binary uses 2 main tricks to hide the flag:
 The tricks start even before `main()` function call.
 
 Here we can see, in the third line, a jump instruction `jne 0x1352` right after a `cmp dword [rbp - 4], 0`.
-As we can see, this jump is skipping the `call main` and, instead, it calls `fcn.000013c1`.
+As we can see, this jump is skipping the call to `main` and, instead, it calls `fcn.000013c1`.
 
 ```assembly
             0x0000130b      488d3df61c00.  lea rdi, [0x00003008]       ; "a15abe90c112d09369d9f9da9a8c046e"
@@ -67,7 +67,7 @@ And of course this `fcn.000013c1` looks just like a `main()` function. Meaning, 
 
 And there is, in fact, a flag hidden there! But it's a fake flag...
 
-The easiest way to proceed here is to edit the binary and change the `jne 0x1352` instruction.
+The easiest way to make sure we can debug the real `main()` function is to edit the binary and change the `jne 0x1352` instruction.
 There are many options here. We can simply swap from `jne` to `je` or replace the `jne` with 2 `nop`.
 
 I used the latter approach and saved the new binary as `patched_headache`. This is the binary I'll be using from here on.
@@ -92,7 +92,9 @@ But when we look at it, this is what we see:
 │     │└──< 0x00001fc0      71ed           jno main
 ```
 
-These instructions seem very random and don't make sense. Plus, we can't see any instruction to print the messages we expect to see on the screen.
+These instructions seem very random and don't make sense. 
+
+And when we look at the rest of the function, we can't see any instruction to print the messages we expect to see on the screen.
 So there is something else going on.
 
 If we run the binary and set a breakpoint right before we enter `main()`, this is what we see:
@@ -113,10 +115,14 @@ If we run the binary and set a breakpoint right before we enter `main()`, this i
 
 The instructions changed. It looks like they're re-written at runtime.
 
+And now when analyzing the rest of the function, the instructions make more sense.
+
+> Note: There are still many weird instructions being shown by radare2. I'm not exactly sure what is going on, but it may be another obfuscation technique used by the binary. I don't know how to completely fix it but we can still see enough of the code to work with it.
+
 ## The transformation of main()
 
 By analyzing the code and running some experiments we can quickly find the function responsible for decoding `main()`.
-The function is called `fcn.00001e33`. And it's called right before `main()`:
+The function is `fcn.00001e33`. And it's called right before `main()`:
 
 ```assembly
             0x55e05d0c5324      4889c7         mov rdi, rax
@@ -131,7 +137,7 @@ The function is called `fcn.00001e33`. And it's called right before `main()`:
             0x55e05d0c534b      e85f0c0000     call main
 ```
 
-We can take a deep look into this function but at the end of the day, this function does exactly what we expect. It decodes the data from `main()`.
+We can take a deep look into this function but at the end of the day, it does exactly what we expect. It decodes the data from `main()`.
 
 It uses a string of hardcoded bytes and perform a `xor` operation between these bytes and the hex data that is already in the `main()`.
 The hardcoded bytes are:
@@ -143,7 +149,15 @@ The hardcoded bytes are:
 0x55e05d0c7018  3639 6439 6639 6461 3961 3863 3034 3665  69d9f9da9a8c046e
 ```
 
-Most importantly, it always decode `main()` function the same way, whether a debugger is being used or not.
+We can maually decode the data. For example in the table below we have the bytes from the encoded `main()`, decoded `main()` and the hardcoded string used to decode.
+
+| encoded `main()` | hardcoded string | decoded `main()` |
+| ---------------- | ---------------- | ---------------- |
+| `0x34` | `0x61` | `0x55` |
+| `0x79` | `0x31` | `0x48` |
+
+
+But most importantly, it always decode `main()` function the same way, whether a debugger is being used or not.
 So there is not much to fight with this decoder. We just execute the binary and let it work its magic before we analyze the instructions from `main()`.
 
 ## More fake flags
