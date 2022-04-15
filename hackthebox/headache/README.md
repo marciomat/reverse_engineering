@@ -149,14 +149,14 @@ The hardcoded bytes are:
 0x55e05d0c7018  3639 6439 6639 6461 3961 3863 3034 3665  69d9f9da9a8c046e
 ```
 
-We can maually decode the data. For example in the table below we have the bytes from the encoded `main()`,the hardcoded string used to decode and the decoded `main()`.
+We can maually decode the data. For example, in the table below we have the first 2 bytes from the encoded `main()`, the hardcoded string used to decode and the decoded `main()`.
 
 | encoded `main()` | hardcoded string | decoded `main()` |
 | ---------------- | ---------------- | ---------------- |
 | `0x34` | `0x61` | `0x34 xor 0x61 == 0x55` |
 | `0x79` | `0x31` | `0x79 xor 0x31 == 0x48` |
 
-If you look back at the `main()` function, these are exactly the bytes found.
+If you look [back](#Real-main-function-but-encrypted) at the `main()` function, these are exactly the bytes found.
 
 But most importantly, it always decode `main()` function the same way, whether a debugger is being used or not.
 So there is not much to fight with this decoder. We just execute the binary and let it work its magic before we analyze the instructions from `main()`.
