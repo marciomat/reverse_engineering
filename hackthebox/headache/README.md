@@ -156,7 +156,7 @@ Just to prove it, we can maually decode the data. For example, in the table belo
 | `0x34` | `0x61` | `0x34 xor 0x61 == 0x55` |
 | `0x79` | `0x31` | `0x79 xor 0x31 == 0x48` |
 
-If you look [back](#Real-main-function-but-encrypted) at the `main()` function, these are exactly the bytes found at the beginning of the function.
+If you look back at the `main()` function, these are exactly the bytes found at the beginning of the function.
 
 But most importantly, it always decode `main()` function the same way, whether a debugger is being used or not.
 So there is not much to fight with this decoder. We just execute the binary and let it work its magic before we analyze the instructions from `main()`.
