@@ -190,9 +190,12 @@ Few lines down the road we can see the following instructions:
             0x55e05d0c60d9      488d45c0       lea rax, [rbp - 0x40]
             0x55e05d0c60dd      4889c7         mov rdi, rax
             0x55e05d0c60e0      e87befffff     call sym.imp.strlen
+            0x55e05d0c60e5      4883f814       cmp rax, 0x14           ; 20
 ```
 
 Looks like the flag! But... of course it's a fake flag. We are still not out of the woods.
+
+But, notice the last instruction, comparing the `strlen` with `0x14`. The length of the flag is probably 20 characters.
 
 ## How many more traps?
 
@@ -203,21 +206,103 @@ It wouldn't be impossible to patch since we know how the decoding algorithm work
 
 ---
 
-We know the messages it prints on the screen, so we can find their address and search for the references.
+We know which messages it prints on the screen, so we can find their address and search for the references.
 
 Let's look at the references to "Login success!":
 
 ```
-:> axt @ 0x55e05d0c7056
-fcn.000013c1 0x55e05d0c54c4 [DATA] lea rdi, [0x55e05d0c7056]
-fcn.000013c1 0x55e05d0c550c [DATA] lea rdi, [0x55e05d0c7056]
-fcn.000013c1 0x55e05d0c552c [DATA] lea rdi, [0x55e05d0c7056]
-(nofunc) 0x55e05d0c61b5 [DATA] lea rdi, [0x55e05d0c7056]
-(nofunc) 0x55e05d0c666e [DATA] lea rdi, [0x55e05d0c7056]
+:> axt @ 0x562ccf3f5056
+fcn.000013c1 0x562ccf3f352c [DATA] lea rdi, [0x562ccf3f5056]
+(nofunc) 0x562ccf3f41b5 [DATA] lea rdi, [0x562ccf3f5056]
+(nofunc) 0x562ccf3f466e [DATA] lea rdi, [0x562ccf3f5056]
 ```
 
-The first 3 appearances are from the fake `main()` function that we are bypassing already.
+The first appearance is from the fake `main()` function that we are bypassing already.
 
 The last 2 are from the real `main()` function. The first one is for the fake flag, so the second one should be for the real flag?
 
+## The final countdown
 
+By looking at the address of the third reference to "Login success!" we can assume there are more useful code towards the end of the `main()` function, that normally don't get executed when a debugger is in use.
+
+Scrolling down we see this:
+
+```assembly
+            0x562ccf3f4214      c68541ffffff.  mov byte [rbp - 0xbf], 0xfe    ; 254
+            0x562ccf3f421b      c68542ffffff.  mov byte [rbp - 0xbe], 0x8d    ; 141
+            0x562ccf3f4222      c68543ffffff.  mov byte [rbp - 0xbd], 0xd    ; 13
+            0x562ccf3f4229      c68544ffffff.  mov byte [rbp - 0xbc], 0xd2    ; 210
+            0x562ccf3f4230      c68545ffffff.  mov byte [rbp - 0xbb], 0xe4    ; 228
+            0x562ccf3f4237      c68546ffffff.  mov byte [rbp - 0xba], 0xfe    ; 254
+            0x562ccf3f423e      c68547ffffff.  mov byte [rbp - 0xb9], 8
+            0x562ccf3f4245      c68548ffffff.  mov byte [rbp - 0xb8], 0xef    ; 239
+            0x562ccf3f424c      c68549ffffff.  mov byte [rbp - 0xb7], 0x57    ; 'W' ; 87
+            0x562ccf3f4253      c6854affffff.  mov byte [rbp - 0xb6], 0x47    ; 'G' ; 71
+            0x562ccf3f425a      c6854bffffff.  mov byte [rbp - 0xb5], 0xdb    ; 219
+            0x562ccf3f4261      c6854cffffff.  mov byte [rbp - 0xb4], 0x4d    ; 'M' ; 77
+            0x562ccf3f4268      c6854dffffff.  mov byte [rbp - 0xb3], 0x96    ; 150
+            0x562ccf3f426f      c6854effffff.  mov byte [rbp - 0xb2], 0x2f    ; '/' ; 47
+            0x562ccf3f4276      c6854fffffff.  mov byte [rbp - 0xb1], 0x3b    ; ';' ; 59
+            0x562ccf3f427d      c68550ffffff.  mov byte [rbp - 0xb0], 0xa8    ; 168
+            0x562ccf3f4284      c68551ffffff.  mov byte [rbp - 0xaf], 0xbb    ; 187
+            0x562ccf3f428b      c68552ffffff.  mov byte [rbp - 0xae], 0x70    ; 'p' ; 112
+            0x562ccf3f4292      c68553ffffff.  mov byte [rbp - 0xad], 0x11    ; 17
+            0x562ccf3f4299      c68554ffffff.  mov byte [rbp - 0xac], 0xad    ; 173
+            0x562ccf3f42a0  ~   c745f8000000.  mov dword [rbp - 8], 0
+```
+
+Which really looks like the initialization of a flag. Just like the fake flag initialization.
+
+But this one seems to be encrypted, so it makes me believe this should be the one.
+
+Using the following command we can jump to the beginning of the code above:
+
+```
+:> dr rip=0x562ccf3f4214
+0x562ccf3f334b ->0x562ccf3f4214
+```
+
+We continue the execution until we run into the references to "Login success!" and "Login Failed!".
+
+```assembly
+        ╎   0x562ccf3f4628      c1e002         shl eax, 2
+        ╎   0x562ccf3f462b      09d0           or eax, edx
+        ╎   0x562ccf3f462d      8845e7         mov byte [rbp - 0x19], al
+        ╎   0x562ccf3f4630      806de746       sub byte [rbp - 0x19], 0x46    ; [0x46:1]=255 ; 70
+        ╎   0x562ccf3f4634      f65de7         neg byte [rbp - 0x19]
+        ╎   0x562ccf3f4637      0fb655e7       movzx edx, byte [rbp - 0x19]
+        ╎   0x562ccf3f463b      8b45f8         mov eax, dword [rbp - 8]
+        ╎   0x562ccf3f463e      0fb64405c0     movzx eax, byte [rbp + rax - 0x40]
+        ╎   0x562ccf3f4643      0fbec0         movsx eax, al
+        ╎   0x562ccf3f4646      39c2           cmp edx, eax
+       ┌──< 0x562ccf3f4648      7416           je 0x562ccf3f4660
+       │╎   0x562ccf3f464a  ~   488d3df70900.  lea rdi, [0x562ccf3f5048]    ; "Login Failed!"
+```
+
+Here we can see the instruction `cmp edx, eax` followed by a conditional jump.
+This jump skips the instruction that loads "Login Failed!".
+
+A breakpoint in the `cmp edx, eax` reveals that `eax` holds the first character of the string that we used as input.
+Which probably means that `edx` is holding the flag!
+
+It's comparing one character at a time, and if any of the characters fail it stops the loop and prints "Login Failed!".
+So we need to temporarily patch the conditional jump so we can loop over every char.
+
+We can use the following instruction for that:
+
+```
+wao jne
+```
+
+This converts the `je` to `jne`.
+
+Now we just need to loop over 20 times and take note of the real flag!
+
+The final test:
+
+```
+$ ./headache 
+Initialising.....
+Enter the key: HTB{l4yl3_w4s_h3r3!}
+Login success!
+```
