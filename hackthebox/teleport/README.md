@@ -112,7 +112,7 @@ In the first 2 lines of the code below we have a function call to `setjmp(env)` 
 
 It's very imporant to understand how these `setjmp()` work. So here is a very quick summary:
 
-> It's mechanism consists of 2 parts:
+> Its mechanism consists of 2 parts:
 >
 > 1. First, `setjmp(jmp_buf env)` saves the context (stack pointer, instruction pointer, registers, etc) into the buffer `env` (which can be any variable passed to the function)
 > 2. Then `longjmp(jmp_buf env, int val)` restores the context saved in `env`. Note that since `instruction pointer` is one of the registers saved/restored, it will cause the program flow to jump to where `setjmp()` is located, as if `setjmp()` had just returned. And the returning value of `setjmp()` will be `val`, which was passed to `longjmp(env, val)`.
@@ -177,7 +177,7 @@ Here is the final piece of the puzzle:
 ```
 
 Without going into too many little details, this section is basically preparing an address offset that will be added to the base address `0x00203300`.
-Then, the _base address_ + _offset_ will be the address of the `env` buffer passed to `longjmp(env)` call.
+Then, the _base address_ + _offset_ will become the address of the `env` buffer passed to `longjmp(env)` call.
 
 Remember those 42 functions that were setting up 42 different `env` buffers? Yeah... you can bet that those buffers are being accessed now!
 
