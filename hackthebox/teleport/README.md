@@ -8,7 +8,7 @@ Input:
 Output:
 - [main.md](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/teleport/main.md) - Full disassembly of the `main()` function
 - [setjmp_funcs.md](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/teleport/setjmp_funcs.md) - List of special functions found in the binary
-- [movzx.md](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/teleport/movzx.md) - Parsed data from the 42 `setjmp()` special functions
+- [movzx.txt](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/teleport/movzx.txt) - Parsed data from the 42 `setjmp()` special functions
 - [decrypt.py](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/teleport/decrypt.py) - Python script to decode the flag
 
 # The challenge
@@ -189,6 +189,6 @@ And now even without looking at those 42 functions we can guess that it's inside
 
 For this final act I parsed the ASCII _hex_ value and the position of each character from those 42 functions and wrote a simple python script to output the final flag!
 
-You can see the parsed data [here](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/teleport/movzx.md) and the python script [here](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/teleport/decrypt.py).
+You can see the parsed data [here](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/teleport/movzx.txt) and the python script [here](https://github.com/marciomat/reverse_engineering/tree/main/hackthebox/teleport/decrypt.py).
 
 Hope you enjoyed!
