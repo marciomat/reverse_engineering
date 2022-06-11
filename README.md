@@ -18,6 +18,7 @@ Some challenges involve creating a python script for brute-forcing the password,
 - [BombsLanded](./hackthebox/bombsLanded)
 - [pneumaticValidator](./hackthebox/pneumaticValidator)
 - [headache](./hackthebox/headache)
+- [Teleport](./hackthebox/teleport)
 
 <br/>
 
